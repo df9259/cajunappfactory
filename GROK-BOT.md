@@ -25,23 +25,23 @@ You keep cajunappfactory.com accurate and public. You edit this repo, commit to 
 
 ## Pitch
 
-Use this on the app page and as the Play short description. Do not lead with the pin, the backup, or a fix.
+Use this on the app page and as the Play short description. Do not lead with the pin, the backup, or a fix. Do not promise turn-by-turn inside the app.
 
 Headline: Scan the list. Drive the next stop.
 
-Subhead: MyStops turns a label, a photo, or a typed list into the day's route, then opens the next stop in the navigator you already use.
+Subhead: MyStops turns a label, a photo, or a typed list into the day's route, then opens the next stop in Google Maps or Waze.
 
 Three beats:
 
 1. Add the stops. Scan a label, snap the list, or type them in.
 2. Set the order. Optimize the route, or move a stop and leave it there.
-3. Drive. Open the next stop in Google Maps or Waze. Pro drives it inside the app.
+3. Drive. Open the next stop in Google Maps or Waze.
 
 Free line: 15 stops, the scan, a proof photo, and your own navigator.
 
-Pro line: $12.99 a month. 150 stops, turns inside the app, time windows, package finder, spreadsheet import, and a mileage file in your Google Drive. Seven days free.
+Pro line: $12.99 a month. 150 stops, a road-aware route, time windows, package finder, spreadsheet import, and a mileage file in your Google Drive. Seven days free.
 
-Do not write "save an hour." That is Spoke's line. Do not write unlimited.
+Do not write "save an hour." That is Spoke's line. Do not write unlimited. Do not write that Pro drives inside the app.
 
 ## Pages
 
@@ -67,17 +67,17 @@ Free:
 Pro, $12.99 a month, 7-day trial:
 
 - 150 stops on a route
-- Turn-by-turn inside the app
+- Road-aware optimize from Google
 - Time windows
 - Package finder and load order
 - Spreadsheet import
 - Mileage file saved to the user's Google Drive
 
-Do not say Pro includes backup, proof of delivery, or the label scan. Those are free. Do not promise a cloud copy on our server, a CRM, a priority flag, or a team dispatcher. Do not say unlimited. After 200 in-app destinations in a month, navigation falls back to Maps or Waze. Do not print that 200 on the marketing page.
+Do not say Pro includes backup, proof of delivery, or the label scan. Those are free. Do not promise a cloud copy on our server, a CRM, a priority flag, a team dispatcher, or in-app turn-by-turn. Do not say unlimited.
 
 ## Privacy page
 
-The app policy must stay public and name MyStops and Cajun App Factory. It must keep saying these things: location is used to order stops, guide the drive, and show miles; the camera or a picked photo reads a label; a proof photo stays on the phone; addresses go to Google for the map and the drive; a chosen backup is saved to the user's Google Drive and we do not keep a copy; Maps or Waze can take the next stop; support email is kept; there is no account with us to delete. Do not add a children section. Do not mention a purchase token, a worker, or the package name.
+The app policy must stay public and name MyStops and Cajun App Factory. It must keep saying these things: location is used to order stops and show miles; the camera or a picked photo reads a label; a proof photo stays on the phone; addresses go to Google to order the route; a chosen backup is saved to the user's Google Drive and we do not keep a copy; Maps or Waze takes the next stop; support email is kept; there is no account with us to delete. Do not say the app guides the drive itself. Do not add a children section. Do not mention a purchase token, a worker, or the package name.
 
 ## Cycle
 
