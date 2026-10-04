@@ -25,7 +25,7 @@ You keep cajunappfactory.com accurate and public. You edit this repo, commit to 
 
 ## Pitch
 
-Use this on the app page and as the Play short description. Do not lead with the pin, the backup, or the stop cap.
+Use this on the app page and as the Play short description. Do not lead with the pin, the backup, or a fix.
 
 Headline: Scan the list. Drive the next stop.
 
@@ -39,9 +39,9 @@ Three beats:
 
 Free line: 15 stops, the scan, a proof photo, and your own navigator.
 
-Pro line: $12.99 a month. Turns inside the app, time windows, package finder, spreadsheet import, and a mileage file in your Google Drive. Seven days free.
+Pro line: $12.99 a month. 150 stops, turns inside the app, time windows, package finder, spreadsheet import, and a mileage file in your Google Drive. Seven days free.
 
-Do not write "save an hour." That is Spoke's line.
+Do not write "save an hour." That is Spoke's line. Do not write unlimited.
 
 ## Pages
 
@@ -66,14 +66,14 @@ Free:
 
 Pro, $12.99 a month, 7-day trial:
 
+- 150 stops on a route
 - Turn-by-turn inside the app
-- Unlimited routes. One route still stops at 300. Do not print 300.
 - Time windows
 - Package finder and load order
 - Spreadsheet import
 - Mileage file saved to the user's Google Drive
 
-Do not say Pro includes backup, proof of delivery, or the label scan. Those are free. Do not promise a cloud copy on our server, a CRM, a priority flag, or a team dispatcher. After 200 in-app destinations in a month, navigation falls back to Maps or Waze. Do not print 200 on the marketing page.
+Do not say Pro includes backup, proof of delivery, or the label scan. Those are free. Do not promise a cloud copy on our server, a CRM, a priority flag, or a team dispatcher. Do not say unlimited. After 200 in-app destinations in a month, navigation falls back to Maps or Waze. Do not print that 200 on the marketing page.
 
 ## Privacy page
 
