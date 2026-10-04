@@ -3,20 +3,85 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cajun App Factory</title>
-  <meta name="description" content="Cajun App Factory builds small Android tools. My Stops is a multi-stop route planner.">
+  <title>Cajun App Factory | Practical Android apps</title>
+  <meta name="description" content="Cajun App Factory is a small studio building practical Android apps. First up: My Stops: Route Planner, a package route maker for delivery drivers.">
+  <meta name="theme-color" content="#120e0c">
+  <link rel="canonical" href="https://cajunappfactory.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Cajun App Factory">
+  <meta property="og:title" content="Cajun App Factory">
+  <meta property="og:description" content="A small studio building practical Android apps. First up: My Stops, a package route maker for delivery drivers.">
+  <meta property="og:url" content="https://cajunappfactory.com/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Cajun App Factory">
+  <meta name="twitter:description" content="A small studio building practical Android apps. First up: My Stops, a package route maker for delivery drivers.">
   <link rel="stylesheet" href="/styles.css">
 </head>
-<body>
-  <main>
-    <p class="brand">Cajun App Factory</p>
-    <h1>Small Android tools.</h1>
-    <p>The first app is a route planner for a day of stops.</p>
-    <a class="card" href="/mystops/">
-      <strong>My Stops</strong>
-      <span>Plan a list of stops, set the order, open the next one in Google Maps.</span>
-    </a>
-    <p class="fine">Support: <a href="mailto:support@cajunappfactory.com">support@cajunappfactory.com</a></p>
+<body class="app">
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-head">
+    <div class="wrap">
+      <p class="brand"><a href="/">Cajun App Factory</a></p>
+      <a href="/mystops/">My Stops</a>
+    </div>
+  </header>
+
+  <main id="main" class="app-main">
+    <section class="hero home-hero" aria-labelledby="home-title">
+      <div class="wrap">
+        <p class="eyebrow">Small studio · Practical apps</p>
+        <h1 id="home-title">Small Android tools that do one job well.</h1>
+        <p class="lede">Cajun App Factory builds practical apps for people who have work to get done. No clutter, no sign-up wall in front of the basics.</p>
+      </div>
+    </section>
+
+    <section class="home-featured" aria-labelledby="app-title">
+      <div class="wrap">
+        <a class="app-card" href="/mystops/" aria-labelledby="app-title" aria-describedby="app-desc app-status">
+          <div class="app-card-body">
+            <p class="eyebrow">Our first app</p>
+            <h2 id="app-title">My Stops: Route Planner</h2>
+            <p id="app-desc" class="app-desc">A package route maker for delivery drivers and couriers. Scan a label or type in the stops, drag them into the order you want, then hand the next stop to Google Maps or Waze.</p>
+            <p class="app-meta">
+              <span id="app-status" class="pill">Coming soon on Google Play</span>
+              <span class="app-link">See how it works <span aria-hidden="true">→</span></span>
+            </p>
+          </div>
+          <div class="app-card-art" aria-hidden="true">
+            <svg viewBox="0 0 240 160" focusable="false">
+              <g class="road" fill="none" stroke-width="8" stroke-linecap="round">
+                <path d="M-10 120 L250 104"/><path d="M80 -10 L104 170"/><path d="M180 -10 L156 170"/>
+              </g>
+              <path class="path" d="M36 118 C74 108 84 62 120 58 S184 92 208 36" fill="none" stroke-width="4" stroke-dasharray="1 9" stroke-linecap="round"/>
+              <circle class="dot" cx="36" cy="118" r="10"/><circle class="dot" cx="120" cy="58" r="10"/><circle class="dot-end" cx="208" cy="36" r="10"/>
+              <g class="num" font-family="system-ui, sans-serif" font-size="11" font-weight="700" text-anchor="middle">
+                <text x="36" y="122">1</text><text x="120" y="62">2</text><text x="208" y="40">3</text>
+              </g>
+            </svg>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="band alt" aria-labelledby="approach-title">
+      <div class="wrap">
+        <h2 id="approach-title">How we build</h2>
+        <p class="sub">Apps made to be useful on a busy day.</p>
+        <div class="features">
+          <article class="feature"><span class="ico">Practical</span><h3>Built for a real job</h3><p>Each app starts with a task someone does every day, and does that task well before anything else.</p></article>
+          <article class="feature"><span class="ico">Easy to start</span><h3>No account to begin</h3><p>We keep the basics open. You can start using our apps without a sign-up wall, and an account only comes in when a feature really needs one.</p></article>
+          <article class="feature"><span class="ico">Privacy-minded</span><h3>No ads, no selling data</h3><p>Free routes stay on your device unless you share them. Read exactly what is collected in the <a href="/mystops/privacy/">privacy policy</a>.</p></article>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      <p class="links"><a href="mailto:support@cajunappfactory.com">support@cajunappfactory.com</a> <a href="/mystops/privacy/">Privacy policy</a> <a href="/mystops/">My Stops</a></p>
+      <p class="legal">© Cajun App Factory. Google Play, Google Maps, and Waze are trademarks of Google LLC.</p>
+    </div>
+  </footer>
 </body>
 </html>

@@ -123,3 +123,33 @@ body.app .map { background: #15100d; }
 body.app .map .road { stroke: #2d241f; }
 body.app .site-head, body.app .band, body.app .site-foot { border-color: var(--line); }
 body.app .hero { background: radial-gradient(60rem 30rem at 80% 0, rgba(251, 146, 60, 0.10), transparent 70%); }
+
+/* ===== Company home page (added) ===== */
+.home-hero { padding: 3rem 0 2rem; }
+.home-hero .wrap { display: block; }
+.home-hero h1 { max-width: 20ch; }
+.home-featured { padding: 0 0 3.5rem; }
+.app-card { display: grid; text-decoration: none; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.45), 0 0 4rem rgba(251, 146, 60, 0.08); transition: border-color 0.15s, transform 0.15s; }
+.app-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.app-card:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+.app-card-body { padding: 1.5rem 1.4rem 1.6rem; }
+.app-card h2 { font-size: 1.9rem; line-height: 1.15; margin: 0 0 0.7rem; }
+.app-desc { margin: 0 0 1.25rem; max-width: 34rem; }
+.app-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.25rem; margin: 0; font: 1rem/1.2 system-ui, sans-serif; }
+.pill { display: inline-block; padding: 0.5rem 0.9rem; border-radius: 999px; border: 1px dashed var(--muted); color: var(--ink); font-weight: 600; font-size: 0.9rem; }
+.app-link { color: var(--accent); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.app-card-art { background: var(--soft); border-top: 1px solid var(--line); min-height: 9rem; }
+.app-card-art svg { display: block; width: 100%; height: 100%; max-height: 14rem; }
+.app-card-art .road { stroke: #2d241f; }
+.app-card-art .path { stroke: var(--accent); }
+.app-card-art .dot { fill: var(--accent); }
+.app-card-art .dot-end { fill: var(--ok); }
+.app-card-art .num { fill: var(--on-accent); }
+@media (min-width: 48rem) {
+  .home-hero { padding: 5rem 0 3rem; }
+  .home-hero h1 { font-size: 3.6rem; }
+  .app-card { grid-template-columns: 1.1fr 0.9fr; }
+  .app-card-body { padding: 2.5rem 2.25rem; }
+  .app-card-art { border-top: 0; border-left: 1px solid var(--line); }
+  .app-card-art svg { max-height: none; }
+}
