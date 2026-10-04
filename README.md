@@ -3,8 +3,9 @@
 Private source for the pages on cajunappfactory.com.
 
 - `/` company page
+- `/privacy/` company privacy policy
 - `/mystops/` My Stops app page
-- `/mystops/privacy/` privacy policy for the Play listing
+- `/mystops/privacy/` My Stops privacy policy for the Play listing
 
 The web bot is `GROK-BOT.md`. Paste that file and say `run site`.
 
