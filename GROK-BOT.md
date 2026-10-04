@@ -39,9 +39,9 @@ Three beats:
 
 Free line: 15 stops, the scan, a spreadsheet, a road-aware route, a proof photo, and your own navigator.
 
-Pro line: $7.99 a month. Unlimited routes, time windows, package finder, and a mileage file in your Google Drive. Seven days free.
+Pro line: $7.99 a month. Unlimited routes, time windows, package finder, and reports in your Google Drive. Seven days free.
 
-Do not write "save an hour." That is Spoke's line. Do not print 300. Do not write that Pro drives inside the app. Do not say the road order or the spreadsheet is paid.
+Do not write "save an hour." That is Spoke's line. Do not print 300. Do not write that Pro drives inside the app. Do not say the road order or the spreadsheet is paid. Do not call the export a mileage report. Mileage is one report inside Reports.
 
 ## Pages
 
@@ -71,13 +71,13 @@ Pro, $7.99 a month, 7-day trial:
 - Unlimited routes. One route still stops at 300. Do not print 300.
 - Time windows
 - Package finder and load order
-- Mileage file saved to the user's Google Drive
+- Reports, saved to the user's Google Drive. A report can be the day's stops or the miles.
 
 Do not say Pro includes backup, proof of delivery, the label scan, the spreadsheet, or the road order. Those are free. Do not promise a cloud copy on our server, a CRM, a priority flag, a team dispatcher, or in-app turn-by-turn.
 
 ## Privacy page
 
-The app policy must stay public and name MyStops and Cajun App Factory. It must keep saying these things: location is used to order stops and show miles; the camera or a picked photo reads a label; a proof photo stays on the phone; addresses go to Google to order the route; a chosen backup is saved to the user's Google Drive and we do not keep a copy; Maps or Waze takes the next stop; support email is kept; there is no account with us to delete. Do not say the app guides the drive itself. Do not add a children section. Do not mention a purchase token, a worker, or the package name.
+The app policy must stay public and name MyStops and Cajun App Factory. It must keep saying these things: location is used to order stops and show miles; the camera or a picked photo reads a label; a proof photo stays on the phone; addresses go to Google to order the route; a chosen backup or report is saved to the user's Google Drive and we do not keep a copy; Maps or Waze takes the next stop; support email is kept; there is no account with us to delete. Do not say the app guides the drive itself. Do not add a children section. Do not mention a purchase token, a worker, or the package name.
 
 ## Cycle
 
