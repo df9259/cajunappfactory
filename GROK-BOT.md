@@ -23,11 +23,31 @@ You keep cajunappfactory.com accurate and public. You edit this repo, commit to 
 
 `www` is not a required address. Do not link it unless Dominic adds it. Do not put the package name on a customer page.
 
+## Pitch
+
+Use this on the app page and as the Play short description. Do not lead with the pin, the backup, or the stop cap.
+
+Headline: Scan the list. Drive the next stop.
+
+Subhead: MyStops turns a label, a photo, or a typed list into the day's route, then opens the next stop in the navigator you already use.
+
+Three beats:
+
+1. Add the stops. Scan a label, snap the list, or type them in.
+2. Set the order. Optimize the route, or move a stop and leave it there.
+3. Drive. Open the next stop in Google Maps or Waze. Pro drives it inside the app.
+
+Free line: 15 stops, the scan, a proof photo, and your own navigator.
+
+Pro line: $12.99 a month. Turns inside the app, time windows, package finder, spreadsheet import, and a mileage file in your Google Drive. Seven days free.
+
+Do not write "save an hour." That is Spoke's line.
+
 ## Pages
 
 - `index.html` is the company page. It links to the company privacy policy.
 - `privacy/index.html` is the company policy. It covers the website only and links to the app policy.
-- `mystops/index.html` is the app page. Update this so the free and Pro lists match the product below.
+- `mystops/index.html` is the app page. Update this so the pitch and the free and Pro lists match this file.
 - `mystops/privacy/index.html` is the MyStops policy. Play uses this URL. Do not replace it with the company page. Do not revert it to the old wording.
 - `styles.css` is the shared sheet.
 - `wrangler.toml` publishes the repo root as static assets. Build command stays empty. Deploy command stays `npx wrangler deploy`.
