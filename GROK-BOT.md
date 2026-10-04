@@ -29,19 +29,19 @@ Use this on the app page and as the Play short description. Do not lead with the
 
 Headline: Scan the list. Drive the next stop.
 
-Subhead: MyStops turns a label, a photo, or a typed list into the day's route, then opens the next stop in Google Maps or Waze.
+Subhead: MyStops turns a label, a photo, a typed list, or a spreadsheet into the day's route, then opens the next stop in Google Maps or Waze.
 
 Three beats:
 
-1. Add the stops. Scan a label, snap the list, or type them in.
+1. Add the stops. Scan a label, snap the list, type them in, or import a spreadsheet.
 2. Set the order. The route follows the roads, or you move a stop and leave it there.
 3. Drive. Open the next stop in Google Maps or Waze.
 
-Free line: 15 stops, the scan, a road-aware route, a proof photo, and your own navigator.
+Free line: 15 stops, the scan, a spreadsheet, a road-aware route, a proof photo, and your own navigator.
 
-Pro line: $7.99 a month. Unlimited routes, time windows, package finder, spreadsheet import, and a mileage file in your Google Drive. Seven days free.
+Pro line: $7.99 a month. Unlimited routes, time windows, package finder, and a mileage file in your Google Drive. Seven days free.
 
-Do not write "save an hour." That is Spoke's line. Do not print 300. Do not write that Pro drives inside the app. Do not say the road order is paid.
+Do not write "save an hour." That is Spoke's line. Do not print 300. Do not write that Pro drives inside the app. Do not say the road order or the spreadsheet is paid.
 
 ## Pages
 
@@ -56,8 +56,9 @@ Do not write "save an hour." That is Spoke's line. Do not print 300. Do not writ
 
 Free:
 
-- 15 stops on one route
+- 15 stops on one route. A longer spreadsheet imports the first 15.
 - Label scan and address search
+- Spreadsheet import
 - One road-aware optimize per list
 - Drag a stop and it stays there when they hit optimize
 - Proof photo, note, and timestamp, stored on the phone
@@ -70,10 +71,9 @@ Pro, $7.99 a month, 7-day trial:
 - Unlimited routes. One route still stops at 300. Do not print 300.
 - Time windows
 - Package finder and load order
-- Spreadsheet import
 - Mileage file saved to the user's Google Drive
 
-Do not say Pro includes backup, proof of delivery, the label scan, or the road order. Those are free. Do not promise a cloud copy on our server, a CRM, a priority flag, a team dispatcher, or in-app turn-by-turn.
+Do not say Pro includes backup, proof of delivery, the label scan, the spreadsheet, or the road order. Those are free. Do not promise a cloud copy on our server, a CRM, a priority flag, a team dispatcher, or in-app turn-by-turn.
 
 ## Privacy page
 
