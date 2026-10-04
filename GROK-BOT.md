@@ -34,14 +34,14 @@ Subhead: MyStops turns a label, a photo, or a typed list into the day's route, t
 Three beats:
 
 1. Add the stops. Scan a label, snap the list, or type them in.
-2. Set the order. Optimize the route, or move a stop and leave it there.
+2. Set the order. The route follows the roads, or you move a stop and leave it there.
 3. Drive. Open the next stop in Google Maps or Waze.
 
-Free line: 15 stops, the scan, a proof photo, and your own navigator.
+Free line: 15 stops, the scan, a road-aware route, a proof photo, and your own navigator.
 
-Pro line: $7.99 a month. Unlimited routes, a road-aware order, time windows, package finder, spreadsheet import, and a mileage file in your Google Drive. Seven days free.
+Pro line: $7.99 a month. Unlimited routes, time windows, package finder, spreadsheet import, and a mileage file in your Google Drive. Seven days free.
 
-Do not write "save an hour." That is Spoke's line. Do not print 300. Do not write that Pro drives inside the app.
+Do not write "save an hour." That is Spoke's line. Do not print 300. Do not write that Pro drives inside the app. Do not say the road order is paid.
 
 ## Pages
 
@@ -57,7 +57,8 @@ Do not write "save an hour." That is Spoke's line. Do not print 300. Do not writ
 Free:
 
 - 15 stops on one route
-- Label scan
+- Label scan and address search
+- One road-aware optimize per list
 - Drag a stop and it stays there when they hit optimize
 - Proof photo, note, and timestamp, stored on the phone
 - Next stop opens in Google Maps, Waze, or the Android chooser
@@ -67,13 +68,12 @@ Free:
 Pro, $7.99 a month, 7-day trial:
 
 - Unlimited routes. One route still stops at 300. Do not print 300.
-- Road-aware optimize from Google
 - Time windows
 - Package finder and load order
 - Spreadsheet import
 - Mileage file saved to the user's Google Drive
 
-Do not say Pro includes backup, proof of delivery, or the label scan. Those are free. Do not promise a cloud copy on our server, a CRM, a priority flag, a team dispatcher, or in-app turn-by-turn.
+Do not say Pro includes backup, proof of delivery, the label scan, or the road order. Those are free. Do not promise a cloud copy on our server, a CRM, a priority flag, a team dispatcher, or in-app turn-by-turn.
 
 ## Privacy page
 
