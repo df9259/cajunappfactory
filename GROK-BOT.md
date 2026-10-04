@@ -14,34 +14,56 @@ You keep cajunappfactory.com accurate and public. You edit this repo, commit to 
 - Company privacy: `https://cajunappfactory.com/privacy`
 - App privacy, the one Play uses: `https://cajunappfactory.com/mystops/privacy`
 - Support: `support@cajunappfactory.com`
+- Public app name: MyStops
 - Play title: `My Stops: Route Planner`
 - Package: `com.cajunappfactory.mystops`
-- Subscription: `mystops_pro`, $7.99 a month, 7-day trial
+- Subscription: `mystops_pro`, $12.99 a month, 7-day trial
 - Repo: `df9259/cajunappfactory`
 - Preview: `https://cajunappfactory.df9259.workers.dev`
 
-`www` is not a required address. Do not link it unless Dominic adds it.
+`www` is not a required address. Do not link it unless Dominic adds it. Do not put the package name on a customer page.
 
 ## Pages
 
 - `index.html` is the company page. It links to the company privacy policy.
-- `privacy/index.html` is the company policy. It covers the website only and links to each app policy.
-- `mystops/index.html` is the app page.
-- `mystops/privacy/index.html` is the My Stops policy. Play uses this URL. Do not replace it with the company page.
+- `privacy/index.html` is the company policy. It covers the website only and links to the app policy.
+- `mystops/index.html` is the app page. Update this so the free and Pro lists match the product below.
+- `mystops/privacy/index.html` is the MyStops policy. Play uses this URL. Do not replace it with the company page. Do not revert it to the old wording.
 - `styles.css` is the shared sheet.
 - `wrangler.toml` publishes the repo root as static assets. Build command stays empty. Deploy command stays `npx wrangler deploy`.
 
-The My Stops policy must stay public, with no login, and must name My Stops and `com.cajunappfactory.mystops`. It has to keep saying these things: location is used to order stops and guide the drive, the camera or a picked photo reads a label, Pro can store a proof photo, addresses go to Google for the map, the order, and in-app guidance, Settings can hand a stop to Google Maps or Waze, Pro backup uses the Google account already on the phone, there is no password, the purchase token is sent to confirm `mystops_pro`, and deletion requests go to support.
+## Product
 
-## Product the pages may mention
+Free:
 
-Free is 15 stops, the label scan, drag-to-pin, and a navigator choice. Pro is unlimited routes, backups, a mileage log, and proof of delivery. The quiet ceiling of 300 is not shown. In-app turns use the Google Navigation SDK. Do not promise a CRM.
+- 15 stops on one route
+- Label scan
+- Drag a stop and it stays there when they hit optimize
+- Proof photo, note, and timestamp, stored on the phone
+- Next stop opens in Google Maps, Waze, or the Android chooser
+- Today's miles, shown on the route
+- Backup to the user's Google Drive
+
+Pro, $12.99 a month, 7-day trial:
+
+- Turn-by-turn inside the app
+- Unlimited routes. One route still stops at 300. Do not print 300.
+- Time windows
+- Package finder and load order
+- Spreadsheet import
+- Mileage file saved to the user's Google Drive
+
+Do not say Pro includes backup, proof of delivery, or the label scan. Those are free. Do not promise a cloud copy on our server, a CRM, a priority flag, or a team dispatcher. After 200 in-app destinations in a month, navigation falls back to Maps or Waze. Do not print 200 on the marketing page.
+
+## Privacy page
+
+The app policy must stay public and name MyStops and Cajun App Factory. It must keep saying these things: location is used to order stops, guide the drive, and show miles; the camera or a picked photo reads a label; a proof photo stays on the phone; addresses go to Google for the map and the drive; a chosen backup is saved to the user's Google Drive and we do not keep a copy; Maps or Waze can take the next stop; support email is kept; there is no account with us to delete. Do not add a children section. Do not mention a purchase token, a worker, or the package name.
 
 ## Cycle
 
 1. State the page change and edit only those files.
 2. Commit to `main` with a conventional message.
-3. Confirm the My Stops privacy URL still loads and still names the package.
+3. Confirm the MyStops privacy URL still loads and still names the app.
 4. If Cloudflare does not deploy, write the exact blocker. Do not invent a second host.
 
 Do not add a blog, a shop, or a login. Do not buy another domain. Email Routing for `support@cajunappfactory.com` is Dominic's Cloudflare click, not a file in this repo.
