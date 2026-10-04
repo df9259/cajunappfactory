@@ -17,7 +17,7 @@ You keep cajunappfactory.com accurate and public. You edit this repo, commit to 
 - Public app name: MyStops
 - Play title: `My Stops: Route Planner`
 - Package: `com.cajunappfactory.mystops`
-- Subscription: `mystops_pro`, $12.99 a month, 7-day trial
+- Subscription: `mystops_pro`, $7.99 a month, 7-day trial
 - Repo: `df9259/cajunappfactory`
 - Preview: `https://cajunappfactory.df9259.workers.dev`
 
@@ -39,9 +39,9 @@ Three beats:
 
 Free line: 15 stops, the scan, a proof photo, and your own navigator.
 
-Pro line: $12.99 a month. 150 stops, a road-aware route, time windows, package finder, spreadsheet import, and a mileage file in your Google Drive. Seven days free.
+Pro line: $7.99 a month. Unlimited routes, a road-aware order, time windows, package finder, spreadsheet import, and a mileage file in your Google Drive. Seven days free.
 
-Do not write "save an hour." That is Spoke's line. Do not write unlimited. Do not write that Pro drives inside the app.
+Do not write "save an hour." That is Spoke's line. Do not print 300. Do not write that Pro drives inside the app.
 
 ## Pages
 
@@ -64,16 +64,16 @@ Free:
 - Today's miles, shown on the route
 - Backup to the user's Google Drive
 
-Pro, $12.99 a month, 7-day trial:
+Pro, $7.99 a month, 7-day trial:
 
-- 150 stops on a route
+- Unlimited routes. One route still stops at 300. Do not print 300.
 - Road-aware optimize from Google
 - Time windows
 - Package finder and load order
 - Spreadsheet import
 - Mileage file saved to the user's Google Drive
 
-Do not say Pro includes backup, proof of delivery, or the label scan. Those are free. Do not promise a cloud copy on our server, a CRM, a priority flag, a team dispatcher, or in-app turn-by-turn. Do not say unlimited.
+Do not say Pro includes backup, proof of delivery, or the label scan. Those are free. Do not promise a cloud copy on our server, a CRM, a priority flag, a team dispatcher, or in-app turn-by-turn.
 
 ## Privacy page
 
