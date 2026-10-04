@@ -3,25 +3,130 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My Stops: Route Planner</title>
-  <meta name="description" content="My Stops is a multi-stop route planner. Set the order, then open the next stop in Google Maps.">
+  <title>My Stops: Route Planner | Cajun App Factory</title>
+  <meta name="description" content="My Stops: Route Planner is a package route maker for delivery drivers. Scan a label, drag stops into order, then hand the next stop to Google Maps or Waze.">
+  <meta name="theme-color" content="#9a3412">
+  <link rel="canonical" href="https://cajunappfactory.com/mystops/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Cajun App Factory">
+  <meta property="og:title" content="My Stops: Route Planner">
+  <meta property="og:description" content="A package route maker for delivery drivers. Scan a label, set the order, go.">
+  <meta property="og:url" content="https://cajunappfactory.com/mystops/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="My Stops: Route Planner">
+  <meta name="twitter:description" content="A package route maker for delivery drivers. Scan a label, set the order, go.">
   <link rel="stylesheet" href="/styles.css">
 </head>
-<body>
-  <main>
-    <p class="brand">Cajun App Factory</p>
-    <h1>My Stops</h1>
-    <p>A route planner for a day of stops. Add the addresses, put them in the order you want, and open the next one in Google Maps.</p>
-    <h2>What it does</h2>
-    <ul>
-      <li>Builds a list of stops by typing, pasting, or a photo of a label.</li>
-      <li>Lets you drag the order. Optimize is a button, not a lock.</li>
-      <li>Hands the next stop to Google Maps for the drive.</li>
-      <li>Saves the list so you can run it again tomorrow.</li>
-    </ul>
-    <h2>Listing</h2>
-    <p>Play title: My Stops: Route Planner. Android package: com.cajunappfactory.mystops.</p>
-    <p class="fine"><a href="/mystops/privacy/">Privacy policy</a> · <a href="mailto:support@cajunappfactory.com">support@cajunappfactory.com</a></p>
+<body class="app">
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-head">
+    <div class="wrap">
+      <p class="brand"><a href="/">Cajun App Factory</a></p>
+      <a href="/mystops/privacy/">Privacy policy</a>
+    </div>
+  </header>
+
+  <main id="main" class="app-main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="wrap">
+        <div>
+          <p class="eyebrow">Route planner for package drivers</p>
+          <h1 id="hero-title">My Stops: build tomorrow’s route in minutes.</h1>
+          <p class="lede">Snap a package label, type or paste an address, and drag your stops into the order you want. Optimize is a button, not a lock. When you’re ready, hand the next stop to Google Maps or Waze.</p>
+          <div class="cta-row">
+            <!-- SWAP LATER: when the Play listing is live, replace this <span> with:
+                 <a class="btn" href="https://play.google.com/store/apps/details?id=com.cajunappfactory.mystops">Get it on Google Play</a> -->
+            <span class="btn" role="link" aria-disabled="true">Coming soon on Google Play</span>
+            <p class="cta-note">Android. Free to start, 15 stops.</p>
+          </div>
+        </div>
+
+        <div class="phone-wrap">
+          <figure class="mock" role="img" aria-label="Illustration of the My Stops app showing a route on a map and a list of three stops in order.">
+            <div class="phone" aria-hidden="true">
+              <div class="screen">
+                <div class="screen-bar"><span>Today’s route</span><span>3 stops</span></div>
+                <div class="map">
+                  <svg viewBox="0 0 200 104" preserveAspectRatio="xMidYMid slice" focusable="false">
+                    <g class="road" fill="none" stroke-width="6" stroke-linecap="round">
+                      <path d="M-10 80 L210 70"/><path d="M60 -10 L80 120"/><path d="M150 -10 L130 120"/>
+                    </g>
+                    <path class="path" d="M28 76 C60 70 70 40 100 38 S150 60 172 24" fill="none" stroke-width="3.5" stroke-dasharray="1 7" stroke-linecap="round"/>
+                    <circle class="dot" cx="28" cy="76" r="7"/><circle class="dot" cx="100" cy="38" r="7"/><circle class="dot-end" cx="172" cy="24" r="7"/>
+                  </svg>
+                </div>
+                <ul class="stops">
+                  <li><span class="n">1</span><span class="t"><b>214 Bayou St</b><small>Label scanned</small></span><span class="grip">⋮⋮</span></li>
+                  <li class="lifted"><span class="n">2</span><span class="t"><b>9 Magnolia Ave</b><small>Pinned here</small></span><span class="grip">⋮⋮</span></li>
+                  <li><span class="n">3</span><span class="t"><b>1180 Canal Rd</b><small>Pasted</small></span><span class="grip">⋮⋮</span></li>
+                </ul>
+                <div class="screen-actions"><span>Optimize</span><span>Go to stop 1</span></div>
+              </div>
+            </div>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="band alt" aria-labelledby="how-title">
+      <div class="wrap">
+        <h2 id="how-title">How it works</h2>
+        <p class="sub">Three steps, from a pile of packages to the first stop.</p>
+        <ol class="steps">
+          <li><h3>Scan or add</h3><p>Photograph a package label, or type or paste the address. Stops land in your list.</p></li>
+          <li><h3>Order</h3><p>Tap Optimize for a suggested order, then drag any stop where you want it. Drag-to-pin keeps it there.</p></li>
+          <li><h3>Go</h3><p>Hand the next stop to Google Maps or Waze, whichever you drive with.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="band" aria-labelledby="feat-title">
+      <div class="wrap">
+        <h2 id="feat-title">Made for a day of drops</h2>
+        <p class="sub">The small things that matter when the van is full.</p>
+        <div class="features">
+          <article class="feature"><span class="ico">Label scan</span><h3>Photo in, address out</h3><p>Point the camera at a package label and the address is read into a stop. No retyping.</p></article>
+          <article class="feature"><span class="ico">Drag to pin</span><h3>You decide the order</h3><p>Pin a stop in place and the rest work around it. Optimize is a button, not a lock.</p></article>
+          <article class="feature"><span class="ico">Navigator choice</span><h3>Google Maps or Waze</h3><p>Pick the navigator you trust. My Stops hands it the next stop and you drive.</p></article>
+          <article class="feature"><span class="ico">Saved lists</span><h3>Run it again tomorrow</h3><p>Your list is saved, so a repeat route is one tap instead of a fresh start.</p></article>
+          <article class="feature"><span class="ico">Type or paste</span><h3>Any way you get addresses</h3><p>Type them, paste a list, or scan them. Mix methods in the same route.</p></article>
+          <article class="feature"><span class="ico">Pro tools</span><h3>For the full-time courier</h3><p>Mileage log and proof-of-delivery photos, plus backup and unlimited routes.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band alt" aria-labelledby="plans-title">
+      <div class="wrap">
+        <h2 id="plans-title">Free and Pro</h2>
+        <p class="sub">Start free. Upgrade when your routes outgrow it.</p>
+        <div class="compare-wrap">
+          <table class="compare">
+            <caption>What each plan includes</caption>
+            <thead>
+              <tr><th scope="col">Feature</th><th scope="col">Free</th><th scope="col">Pro</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Stops</th><td>15 stops</td><td>Unlimited routes</td></tr>
+              <tr><th scope="row">Label scan</th><td class="yes">Included</td><td class="yes">Included</td></tr>
+              <tr><th scope="row">Drag-to-pin</th><td class="yes">Included</td><td class="yes">Included</td></tr>
+              <tr><th scope="row">Google Maps or Waze</th><td class="yes">Included</td><td class="yes">Included</td></tr>
+              <tr><th scope="row">Backup</th><td class="no">Not included</td><td class="yes">Included</td></tr>
+              <tr><th scope="row">Mileage log</th><td class="no">Not included</td><td class="yes">Included</td></tr>
+              <tr><th scope="row">Proof-of-delivery photo</th><td class="no">Not included</td><td class="yes">Included</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="price-note"><strong>Pro is $7.99 a month</strong> with a 7-day free trial. Billed through Google Play; cancel any time in Play.</p>
+      </div>
+    </section>
   </main>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      <p class="links"><a href="/mystops/privacy/">Privacy policy</a> <a href="mailto:support@cajunappfactory.com">support@cajunappfactory.com</a> <a href="/">Cajun App Factory</a></p>
+      <p class="legal">My Stops: Route Planner · Android package com.cajunappfactory.mystops · Google Play, Google Maps, and Waze are trademarks of Google LLC.</p>
+    </div>
+  </footer>
 </body>
 </html>

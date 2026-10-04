@@ -1,4 +1,4 @@
-:root { color-scheme: light dark; --ink: #1c1917; --paper: #faf7f2; --line: #e7e0d6; --accent: #9a3412; }
+:root { color-scheme: light dark; --ink: #1c1917; --paper: #d8cdbc; --line: #b5a892; --accent: #8a2e0e; }
 @media (prefers-color-scheme: dark) {
   :root { --ink: #faf7f2; --paper: #1c1917; --line: #44403c; --accent: #fdba74; }
 }
@@ -14,3 +14,112 @@ h2 { font-size: 1.25rem; margin: 2rem 0 0.4rem; }
 .card span { display: block; margin-top: 0.25rem; }
 .fine { font: 0.9rem/1.4 system-ui, sans-serif; margin-top: 2rem; }
 ul { padding-left: 1.2rem; }
+
+/* ===== My Stops app page (added; existing rules above are untouched) ===== */
+:root { --surface: #e6dccd; --soft: #cbbfab; --on-accent: #fff; --muted: #3f3a35; --ok: #14532d; }
+@media (prefers-color-scheme: dark) {
+  :root { --surface: #262220; --soft: #2a2523; --on-accent: #1c1917; --muted: #d6cfc7; --ok: #86efac; }
+}
+.sans { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.skip { position: absolute; left: -999px; top: 0; background: var(--accent); color: var(--on-accent); padding: 0.6rem 1rem; z-index: 10; font: 1rem system-ui, sans-serif; }
+.skip:focus { left: 0.5rem; top: 0.5rem; }
+a:focus-visible, .btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+
+.wrap { max-width: 68rem; margin: 0 auto; padding: 0 1.25rem; }
+.site-head { padding: 1.25rem 0; border-bottom: 1px solid var(--line); }
+.site-head .wrap { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.site-head a { font: 0.9rem system-ui, sans-serif; }
+.site-head .brand a { color: inherit; text-decoration: none; }
+
+.hero { padding: 2.5rem 0 3rem; }
+.hero .wrap { display: grid; gap: 2.5rem; align-items: center; }
+.eyebrow { font: 600 0.8rem/1 system-ui, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 0 0 0.9rem; }
+.hero h1 { font-size: 2.4rem; line-height: 1.1; margin: 0 0 1rem; }
+.lede { font-size: 1.15rem; margin: 0 0 1.5rem; max-width: 34rem; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; align-items: center; }
+.btn { display: inline-block; font: 600 1rem/1 system-ui, sans-serif; padding: 0.95rem 1.4rem; border-radius: 999px; text-decoration: none; border: 2px solid var(--accent); background: var(--accent); color: var(--on-accent); }
+.btn[aria-disabled="true"] { background: transparent; color: var(--ink); border-style: dashed; border-color: var(--muted); cursor: not-allowed; }
+.cta-note { font: 0.85rem/1.4 system-ui, sans-serif; color: var(--muted); margin: 0; }
+
+/* phone mockup (CSS only) */
+.phone-wrap { display: flex; justify-content: center; }
+.phone { width: 15.5rem; border-radius: 2.2rem; padding: 0.6rem; background: #292524; box-shadow: 0 1.5rem 3rem rgba(28, 25, 23, 0.25); }
+.screen { background: var(--paper); color: var(--ink); border-radius: 1.7rem; overflow: hidden; font: 0.8rem/1.3 system-ui, sans-serif; }
+.screen-bar { background: var(--accent); color: var(--on-accent); padding: 0.8rem 0.9rem; font-weight: 700; display: flex; justify-content: space-between; }
+.map { height: 6.5rem; background: var(--soft); border-bottom: 1px solid var(--line); }
+.map svg { display: block; width: 100%; height: 100%; }
+.map .road { stroke: var(--line); }
+.map .path { stroke: var(--accent); }
+.map .dot { fill: var(--accent); }
+.map .dot-end { fill: var(--ok); }
+.stops { list-style: none; margin: 0; padding: 0.4rem 0.6rem; }
+.stops li { display: flex; align-items: center; gap: 0.55rem; padding: 0.5rem 0.4rem; border-bottom: 1px solid var(--line); background: var(--paper); }
+.stops li:last-child { border-bottom: 0; }
+.stops .n { flex: none; width: 1.4rem; height: 1.4rem; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-weight: 700; display: grid; place-items: center; font-size: 0.72rem; }
+.stops .t { flex: 1; min-width: 0; }
+.stops .t b { display: block; font-weight: 600; }
+.stops .t small { color: var(--muted); font-size: 0.7rem; }
+.stops .grip { color: var(--muted); letter-spacing: -2px; font-size: 1rem; }
+.stops li.lifted { box-shadow: 0 0.3rem 0.8rem rgba(0, 0, 0, 0.22); border-radius: 8px; border: 1px solid var(--accent); transform: translateX(0.2rem); }
+.screen-actions { display: flex; gap: 0.4rem; padding: 0.5rem 0.7rem 0.8rem; }
+.screen-actions span { flex: 1; text-align: center; padding: 0.55rem 0.2rem; border-radius: 999px; font-weight: 600; border: 1px solid var(--accent); color: var(--accent); }
+.screen-actions span:last-child { background: var(--accent); color: var(--on-accent); }
+
+.band { padding: 3rem 0; border-top: 1px solid var(--line); }
+.band.alt { background: var(--soft); }
+.band h2 { font-size: 1.7rem; line-height: 1.2; margin: 0 0 0.6rem; }
+.band .sub { margin: 0 0 1.75rem; max-width: 36rem; color: var(--muted); }
+
+.steps { list-style: none; counter-reset: step; margin: 0; padding: 0; display: grid; gap: 1rem; }
+.steps li { counter-increment: step; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 1.25rem; }
+.steps li::before { content: counter(step); display: grid; place-items: center; width: 2.2rem; height: 2.2rem; border-radius: 50%; background: var(--accent); color: var(--on-accent); font: 700 1rem system-ui, sans-serif; margin-bottom: 0.7rem; }
+.steps h3, .feature h3 { margin: 0 0 0.35rem; font-size: 1.15rem; }
+.steps p, .feature p { margin: 0; }
+
+.features { display: grid; gap: 1rem; }
+.feature { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 1.25rem; }
+.feature .ico { display: block; font: 700 0.75rem/1 system-ui, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+
+.compare-wrap { overflow-x: auto; }
+.compare { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; font: 1rem/1.4 system-ui, sans-serif; }
+.compare caption { text-align: left; padding-bottom: 0.7rem; color: var(--muted); font-size: 0.9rem; }
+.compare th, .compare td { padding: 0.85rem 0.9rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.compare thead th { font-size: 1.05rem; border-bottom: 2px solid var(--accent); }
+.compare tbody th { font-weight: 600; }
+.compare tr:last-child th, .compare tr:last-child td { border-bottom: 0; }
+.compare .yes { color: var(--ok); font-weight: 600; }
+.compare .no { color: var(--muted); }
+.price-note { font: 0.95rem/1.5 system-ui, sans-serif; margin: 1rem 0 0; }
+
+.site-foot { border-top: 1px solid var(--line); padding: 2rem 0 3rem; font: 0.95rem/1.6 system-ui, sans-serif; }
+.site-foot p { margin: 0 0 0.4rem; }
+.site-foot .links a { margin-right: 1.2rem; }
+.site-foot .legal { color: var(--muted); font-size: 0.85rem; }
+
+@media (min-width: 48rem) {
+  .hero { padding: 4rem 0 5rem; }
+  .hero .wrap { grid-template-columns: 1.2fr 0.8fr; gap: 3rem; }
+  .hero h1 { font-size: 3.3rem; }
+  .band { padding: 4.5rem 0; }
+  .steps { grid-template-columns: repeat(3, 1fr); }
+  .features { grid-template-columns: repeat(3, 1fr); }
+  .phone { width: 17rem; }
+}
+main.app-main { max-width: none; margin: 0; padding: 0; }
+.mock { margin: 0; }
+
+/* My Stops page: dark-first espresso palette in both color schemes */
+body.app {
+  color-scheme: dark;
+  --ink: #f1e9de; --paper: #120e0c; --line: #3b322c; --accent: #fb923c;
+  --surface: #1d1714; --soft: #19130f; --on-accent: #1a0f08; --muted: #c4b8aa; --ok: #86efac;
+}
+body.app .band.alt { background: #0d0a08; }
+body.app .phone { background: #050403; border: 1px solid #4a3f37; box-shadow: 0 1.5rem 3rem rgba(0, 0, 0, 0.6), 0 0 4rem rgba(251, 146, 60, 0.12); }
+body.app .screen { background: #1a1411; }
+body.app .stops li { background: #1a1411; }
+body.app .stops li.lifted { background: #2a1f18; }
+body.app .map { background: #15100d; }
+body.app .map .road { stroke: #2d241f; }
+body.app .site-head, body.app .band, body.app .site-foot { border-color: var(--line); }
+body.app .hero { background: radial-gradient(60rem 30rem at 80% 0, rgba(251, 146, 60, 0.10), transparent 70%); }
