@@ -1,0 +1,16 @@
+:root { color-scheme: light dark; --ink: #1c1917; --paper: #faf7f2; --line: #e7e0d6; --accent: #9a3412; }
+@media (prefers-color-scheme: dark) {
+  :root { --ink: #faf7f2; --paper: #1c1917; --line: #44403c; --accent: #fdba74; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; font: 18px/1.5 Georgia, "Times New Roman", serif; color: var(--ink); background: var(--paper); }
+main { max-width: 40rem; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+a { color: var(--accent); }
+h1 { font-size: 2.2rem; line-height: 1.15; margin: 0.2rem 0 1rem; }
+h2 { font-size: 1.25rem; margin: 2rem 0 0.4rem; }
+.brand { letter-spacing: 0.08em; text-transform: uppercase; font: 0.75rem/1 system-ui, sans-serif; margin: 0; }
+.card { display: block; margin-top: 1.5rem; padding: 1rem 1.1rem; border: 1px solid var(--line); border-radius: 12px; text-decoration: none; color: inherit; }
+.card strong { display: block; font-size: 1.2rem; }
+.card span { display: block; margin-top: 0.25rem; }
+.fine { font: 0.9rem/1.4 system-ui, sans-serif; margin-top: 2rem; }
+ul { padding-left: 1.2rem; }
