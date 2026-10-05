@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cajun App Factory | Practical Android apps</title>
-  <meta name="description" content="Cajun App Factory is a small studio building practical Android apps. First up: MyStops: Route Planner, a package route maker for delivery drivers.">
+  <meta name="description" content="Cajun App Factory is a small studio building practical Android apps. First up: MyStops, a package route maker for delivery drivers.">
   <meta name="theme-color" content="#120e0c">
   <link rel="canonical" href="https://cajunappfactory.com/">
   <meta property="og:type" content="website">
@@ -15,6 +15,10 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Cajun App Factory">
   <meta name="twitter:description" content="A small studio building practical Android apps. First up: MyStops, a package route maker for delivery drivers.">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body class="app">
@@ -23,7 +27,11 @@
   <header class="site-head">
     <div class="wrap">
       <p class="brand"><a href="/">Cajun App Factory</a></p>
-      <a href="/mystops/">MyStops</a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="/mystops/">MyStops</a>
+        <a href="/privacy/">Privacy</a>
+        <a href="mailto:support@cajunappfactory.com">Support</a>
+      </nav>
     </div>
   </header>
 
@@ -38,18 +46,18 @@
 
     <section class="home-featured" aria-labelledby="app-title">
       <div class="wrap">
-        <a class="app-card" href="/mystops/" aria-labelledby="app-title" aria-describedby="app-desc app-status">
+        <article class="app-card">
           <div class="app-card-body">
             <p class="eyebrow">Our first app</p>
             <h2 id="app-title">MyStops: Route Planner</h2>
-            <p id="app-desc" class="app-desc">A package route maker for delivery drivers and couriers. Scan a label or type in the stops, drag them into the order you want, then hand the next stop to Google Maps or Waze.</p>
-            <p class="app-meta">
-              <span id="app-status" class="pill">Coming soon on Google Play</span>
-              <span class="app-link">See how it works <span aria-hidden="true">→</span></span>
-            </p>
+            <p id="app-desc" class="app-desc">Scan the list. Drive the next stop. MyStops is a package route maker for delivery drivers: it turns a label, a photo, a typed list, or a spreadsheet into the day’s route, then opens the next stop in Google Maps or Waze.</p>
+            <div class="app-actions">
+              <a class="btn-go" href="/mystops/" aria-describedby="app-status">See MyStops <span aria-hidden="true">→</span></a>
+              <p id="app-status" class="soon">Coming soon on Google Play</p>
+            </div>
           </div>
           <div class="app-card-art" aria-hidden="true">
-            <svg viewBox="0 0 240 160" focusable="false">
+            <svg viewBox="0 0 240 160" preserveAspectRatio="xMidYMid slice" focusable="false">
               <g class="road" fill="none" stroke-width="8" stroke-linecap="round">
                 <path d="M-10 120 L250 104"/><path d="M80 -10 L104 170"/><path d="M180 -10 L156 170"/>
               </g>
@@ -60,7 +68,7 @@
               </g>
             </svg>
           </div>
-        </a>
+        </article>
       </div>
     </section>
 
@@ -79,7 +87,7 @@
 
   <footer class="site-foot">
     <div class="wrap">
-      <p class="links"><a href="mailto:support@cajunappfactory.com">support@cajunappfactory.com</a> <a href="/privacy/">Privacy policy</a> <a href="/mystops/">MyStops</a></p>
+      <p class="links"><a href="/mystops/">MyStops</a> <a href="/privacy/">Privacy policy</a> <a href="/mystops/privacy/">MyStops privacy policy</a> <a href="mailto:support@cajunappfactory.com">support@cajunappfactory.com</a></p>
       <p class="legal">© Cajun App Factory. Google Play, Google Maps, and Waze are trademarks of Google LLC.</p>
     </div>
   </footer>

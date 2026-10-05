@@ -4,17 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MyStops: Route Planner | Cajun App Factory</title>
-  <meta name="description" content="MyStops: Route Planner is a package route maker for delivery drivers. Scan a label, drag stops into order, then hand the next stop to Google Maps or Waze.">
-  <meta name="theme-color" content="#9a3412">
+  <meta name="description" content="Scan the list. Drive the next stop. MyStops turns a label, a photo, a typed list, or a spreadsheet into the day’s route, then opens the next stop in Google Maps or Waze.">
+  <meta name="theme-color" content="#120e0c">
   <link rel="canonical" href="https://cajunappfactory.com/mystops/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Cajun App Factory">
   <meta property="og:title" content="MyStops: Route Planner">
-  <meta property="og:description" content="A package route maker for delivery drivers. Scan a label, set the order, go.">
+  <meta property="og:description" content="Scan the list. Drive the next stop. A package route maker for delivery drivers.">
   <meta property="og:url" content="https://cajunappfactory.com/mystops/">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="MyStops: Route Planner">
-  <meta name="twitter:description" content="A package route maker for delivery drivers. Scan a label, set the order, go.">
+  <meta name="twitter:description" content="Scan the list. Drive the next stop. A package route maker for delivery drivers.">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body class="app">
@@ -23,7 +27,11 @@
   <header class="site-head">
     <div class="wrap">
       <p class="brand"><a href="/">Cajun App Factory</a></p>
-      <a href="/mystops/privacy/">Privacy policy</a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="/mystops/" aria-current="page">MyStops</a>
+        <a href="/privacy/">Privacy</a>
+        <a href="mailto:support@cajunappfactory.com">Support</a>
+      </nav>
     </div>
   </header>
 
@@ -31,14 +39,14 @@
     <section class="hero" aria-labelledby="hero-title">
       <div class="wrap">
         <div>
-          <p class="eyebrow">Route planner for package drivers</p>
-          <h1 id="hero-title">MyStops: build tomorrow’s route in minutes.</h1>
-          <p class="lede">Snap a package label, type or paste an address, and drag your stops into the order you want. Optimize is a button, not a lock. When you’re ready, hand the next stop to Google Maps or Waze.</p>
-          <div class="cta-row">
-            <!-- SWAP LATER: when the Play listing is live, replace this <span> with:
-                 <a class="btn" href="https://play.google.com/store/apps/details?id=com.cajunappfactory.mystops">Get it on Google Play</a> -->
-            <span class="btn" role="link" aria-disabled="true">Coming soon on Google Play</span>
-            <p class="cta-note">Android. Free to start, 15 stops.</p>
+          <p class="eyebrow">MyStops · Route planner for package drivers</p>
+          <h1 id="hero-title">Scan the list. Drive the next stop.</h1>
+          <p class="lede">MyStops turns a label, a photo, a typed list, or a spreadsheet into the day’s route, then opens the next stop in Google Maps or Waze.</p>
+          <div class="cta-stack">
+            <!-- SWAP LATER: when the Play listing is live, replace this label (the <p class="soon"> below) with
+                 <a class="btn-go" href="[Google Play listing URL]">Get it on Google Play</a> -->
+            <p class="soon">Coming soon on Google Play</p>
+            <p class="cta-note">Free to start. 15 stops.</p>
           </div>
         </div>
 
@@ -87,9 +95,9 @@
         <h2 id="how-title">How it works</h2>
         <p class="sub">Three steps, from a pile of packages to the first stop.</p>
         <ol class="steps">
-          <li><h3>Scan or add</h3><p>Photograph a package label, or type or paste the address. Stops land in your list.</p></li>
-          <li><h3>Order</h3><p>Tap Optimize for a suggested order, then drag any stop where you want it. Drag-to-pin keeps it there.</p></li>
-          <li><h3>Go</h3><p>Hand the next stop to Google Maps or Waze, whichever you drive with.</p></li>
+          <li><h3>Add the stops</h3><p>Scan a label, snap the list, type them in, or import a spreadsheet.</p></li>
+          <li><h3>Set the order</h3><p>The route follows the roads, or you move a stop and leave it there.</p></li>
+          <li><h3>Drive</h3><p>Open the next stop in Google Maps or Waze.</p></li>
         </ol>
       </div>
     </section>
@@ -99,12 +107,12 @@
         <h2 id="feat-title">Made for a day of drops</h2>
         <p class="sub">The small things that matter when the van is full.</p>
         <div class="features">
-          <article class="feature"><span class="ico">Label scan</span><h3>Photo in, address out</h3><p>Point the camera at a package label and the address is read into a stop. No retyping.</p></article>
-          <article class="feature"><span class="ico">Drag to pin</span><h3>You decide the order</h3><p>Pin a stop in place and the rest work around it. Optimize is a button, not a lock.</p></article>
-          <article class="feature"><span class="ico">Navigator choice</span><h3>Google Maps or Waze</h3><p>Pick the navigator you trust. MyStops hands it the next stop and you drive.</p></article>
-          <article class="feature"><span class="ico">Saved lists</span><h3>Run it again tomorrow</h3><p>Your list is saved, so a repeat route is one tap instead of a fresh start.</p></article>
-          <article class="feature"><span class="ico">Type or paste</span><h3>Any way you get addresses</h3><p>Type them, paste a list, or scan them. Mix methods in the same route.</p></article>
-          <article class="feature"><span class="ico">Pro tools</span><h3>For the full-time courier</h3><p>Mileage log and proof-of-delivery photos, plus backup and unlimited routes.</p></article>
+          <article class="feature"><span class="ico">Label scan</span><h3>Photo in, address out</h3><p>Point the camera at a package label or a printed list and the addresses become stops. You can also search for an address.</p></article>
+          <article class="feature"><span class="ico">Spreadsheet</span><h3>Bring the list you have</h3><p>Import a spreadsheet and it becomes the day’s stops. A longer sheet imports the first 15.</p></article>
+          <article class="feature"><span class="ico">Road-aware route</span><h3>The order follows the roads</h3><p>Hit Optimize and the stops are ordered along the roads. Free includes one road-aware optimize per list.</p></article>
+          <article class="feature"><span class="ico">Drag to pin</span><h3>Move a stop, leave it there</h3><p>Drag a stop where you want it and it stays there when you hit Optimize.</p></article>
+          <article class="feature"><span class="ico">Proof photo</span><h3>Photo, note, timestamp</h3><p>Take a proof photo and add a note, with a timestamp. It is stored on your phone.</p></article>
+          <article class="feature"><span class="ico">Miles and backup</span><h3>Know the day, keep the list</h3><p>Today’s miles show on the route. Back up your list to your own Google Drive.</p></article>
         </div>
       </div>
     </section>
@@ -112,33 +120,43 @@
     <section class="band alt" aria-labelledby="plans-title">
       <div class="wrap">
         <h2 id="plans-title">Free and Pro</h2>
-        <p class="sub">Start free. Upgrade when your routes outgrow it.</p>
-        <div class="compare-wrap">
-          <table class="compare">
-            <caption>What each plan includes</caption>
-            <thead>
-              <tr><th scope="col">Feature</th><th scope="col">Free</th><th scope="col">Pro</th></tr>
-            </thead>
-            <tbody>
-              <tr><th scope="row">Stops</th><td>15 stops</td><td>Unlimited routes</td></tr>
-              <tr><th scope="row">Label scan</th><td class="yes">Included</td><td class="yes">Included</td></tr>
-              <tr><th scope="row">Drag-to-pin</th><td class="yes">Included</td><td class="yes">Included</td></tr>
-              <tr><th scope="row">Google Maps or Waze</th><td class="yes">Included</td><td class="yes">Included</td></tr>
-              <tr><th scope="row">Backup</th><td class="no">Not included</td><td class="yes">Included</td></tr>
-              <tr><th scope="row">Mileage log</th><td class="no">Not included</td><td class="yes">Included</td></tr>
-              <tr><th scope="row">Proof-of-delivery photo</th><td class="no">Not included</td><td class="yes">Included</td></tr>
-            </tbody>
-          </table>
+        <p class="sub">Start free. Add Pro when your days get bigger.</p>
+        <div class="plans">
+          <article class="plan" aria-labelledby="free-title">
+            <h3 id="free-title">Free</h3>
+            <p class="plan-sub">Everything below is free.</p>
+            <ul class="checks">
+              <li>15 stops on one route. A longer spreadsheet imports the first 15.</li>
+              <li>Label scan and address search</li>
+              <li>Spreadsheet import</li>
+              <li>One road-aware optimize per list</li>
+              <li>Drag a stop and it stays there when you hit Optimize</li>
+              <li>Proof photo, note, and timestamp, stored on your phone</li>
+              <li>Next stop opens in Google Maps, Waze, or the Android chooser</li>
+              <li>Today’s miles, shown on the route</li>
+              <li>Backup to your Google Drive</li>
+            </ul>
+          </article>
+          <article class="plan plan-pro" aria-labelledby="pro-title">
+            <h3 id="pro-title">Pro</h3>
+            <p class="plan-sub"><strong>$7.99 a month.</strong> Seven days free.</p>
+            <ul class="checks">
+              <li>Unlimited routes</li>
+              <li>Time windows</li>
+              <li>Package finder and load order</li>
+              <li>Reports, saved to your Google Drive. A report can be the day’s stops or the miles.</li>
+            </ul>
+          </article>
         </div>
-        <p class="price-note"><strong>Pro is $7.99 a month</strong> with a 7-day free trial. Billed through Google Play; cancel any time in Play.</p>
+        <p class="price-note">Pro is billed through Google Play. Cancel any time in Play.</p>
       </div>
     </section>
   </main>
 
   <footer class="site-foot">
     <div class="wrap">
-      <p class="links"><a href="/mystops/privacy/">Privacy policy</a> <a href="mailto:support@cajunappfactory.com">support@cajunappfactory.com</a> <a href="/">Cajun App Factory</a></p>
-      <p class="legal">MyStops: Route Planner · Android package com.cajunappfactory.mystops · Google Play, Google Maps, and Waze are trademarks of Google LLC.</p>
+      <p class="links"><a href="/mystops/">MyStops</a> <a href="/privacy/">Privacy policy</a> <a href="/mystops/privacy/">MyStops privacy policy</a> <a href="mailto:support@cajunappfactory.com">support@cajunappfactory.com</a></p>
+      <p class="legal">© Cajun App Factory. MyStops: Route Planner. Google Play, Google Maps, and Waze are trademarks of Google LLC.</p>
     </div>
   </footer>
 </body>
