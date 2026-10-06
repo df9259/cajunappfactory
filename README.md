@@ -1,11 +1,12 @@
 # Cajun App Factory site
 
-Private source for the pages on cajunappfactory.com.
+Source for the pages on cajunappfactory.com.
 
 - `/` company page
 - `/privacy/` company privacy policy
-- `/mystops/` My Stops app page
-- `/mystops/privacy/` My Stops privacy policy for the Play listing
+- `/stopscope/` StopScope app page
+- `/stopscope/privacy/` StopScope privacy policy for the Play listing
+- `/mystops/` and `/mystops/privacy/` redirect to the StopScope pages
 
 The web bot is `GROK-BOT.md`. Paste that file and say `run site`.
 
