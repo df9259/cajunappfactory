@@ -203,3 +203,6 @@ body.app .hero { background: radial-gradient(60rem 30rem at 80% 0, rgba(245, 185
 .checks li:first-child { border-top: 0; }
 .checks li::before { content: "\2713"; position: absolute; left: 0; top: 0.55rem; color: var(--accent); font-weight: 700; }
 @media (min-width: 48rem) { .plans { grid-template-columns: 1fr 1fr; gap: 1.5rem; } }
+
+/* ===== Coming soon tag for features not in the app yet (added) ===== */
+.tag-soon { display: inline-block; margin-left: 0.35rem; padding: 0.1rem 0.5rem; border: 1px solid var(--accent); border-radius: 999px; color: var(--accent); font: 600 0.75rem/1.4 system-ui, sans-serif; letter-spacing: 0.04em; text-transform: uppercase; vertical-align: 0.1em; white-space: nowrap; }

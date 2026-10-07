@@ -1,0 +1,18 @@
+# Repo-only files that Wrangler must not upload as public assets.
+# Same format as .gitignore. Do not list _redirects here: Workers reads it from the assets directory.
+.git
+.git/
+.gitignore
+.assetsignore
+.wrangler/
+.github/
+node_modules/
+.dev.vars*
+*.md
+docs/
+shots/
+wrangler.toml
+wrangler.json
+wrangler.jsonc
+package.json
+package-lock.json

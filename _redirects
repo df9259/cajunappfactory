@@ -1,0 +1,7 @@
+# Old MyStops URLs: permanent redirects to the StopScope pages.
+/mystops /stopscope/ 301
+/mystops/ /stopscope/ 301
+/mystops/index.html /stopscope/ 301
+/mystops/privacy /stopscope/privacy/ 301
+/mystops/privacy/ /stopscope/privacy/ 301
+/mystops/privacy/index.html /stopscope/privacy/ 301
