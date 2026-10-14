@@ -45,7 +45,7 @@ Screenshot and demo files still live under `assets/mystops/`. Do not rename that
 
 ## Privacy page
 
-The app policy must stay public and name StopScope and Cajun App Factory. It must keep saying these things: location is used to order stops and show miles; the camera or a picked photo reads a label; a proof photo stays on the phone; addresses go to Google to place stops and draw the road line; Maps or Waze takes the next stop; support email is kept; there is no account with us to delete. Do not say the app guides the drive itself. Do not add a children section. Do not mention a purchase token, a worker, or the package name.
+The app policy must stay public and name StopScope, StopScope Dispatch and Cajun App Factory. Since 0.3.0 (effective October 14, 2026) it covers required sign-in, the account and its deletion (https://stopscope.com/delete-account), Dispatch data shared with the company and its retention, AdMob, Stripe, Cloudflare, security, US state and GDPR rights, and children. The source text is kept in sync with https://stopscope.com/privacy (repo df9259/stopscope-web, public/privacy/index.html). Do not remove those sections without Dominic's OK.
 
 ## Cycle
 
