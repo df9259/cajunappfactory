@@ -1,0 +1,4 @@
+Contact: mailto:support@cajunappfactory.com
+Expires: 2027-10-22T23:59:59.000Z
+Preferred-Languages: en
+Canonical: https://cajunappfactory.com/.well-known/security.txt
