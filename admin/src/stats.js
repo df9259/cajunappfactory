@@ -120,13 +120,66 @@ export async function routesOps(db) {
     proof_photo_pct: pct(pr.photo || 0, done), proof_signature_pct: pct(pr.sig || 0, done), proof_storage_mb: Math.round((bytes / 1048576) * 100) / 100 };
 }
 
+
+// 10-23: feature adoption from feature_counters (stopscope-web migration 0027). Aggregates only: per-counter user counts and sums.
+export const FEATURES = { optimize_runs: 'Optimize', csv_imports: 'Spreadsheet import', handoff_maps: 'Hand off to Maps', handoff_waze: 'Hand off to Waze',
+  fuel_entries: 'Fuel log', mileage_sessions: 'Mileage tracking', routes_started: 'Routes started', route_stops: 'Route stops' };
+const pct1 = (a, b) => (b ? Math.round((a / b) * 1000) / 10 : null);
+export async function features(db, now = Date.now()) {
+  const from30 = ymd(now - 29 * DAY), from7 = ymd(now - 6 * DAY);
+  const n = (await one(db, 'SELECT COUNT(*) n FROM feature_counters WHERE day >= ? AND value > 0', from30)).n || 0;
+  if (!n) return { has_data: false };
+  const by = await activeSets(db, from30);
+  const appActive = (from) => { const s = new Set(); for (const [d, set] of by) if (d >= from) for (const u of set) if (u.startsWith('app:')) s.add(u.slice(4)); return s; };
+  const cu = async (from) => new Set((await all(db, 'SELECT DISTINCT app_user_id u FROM feature_counters WHERE day >= ? AND value > 0', from)).map((r) => r.u));
+  const den = async (from) => { const s = appActive(from); for (const u of await cu(from)) s.add(u); return s.size; };          // counter senders were active too
+  const a7 = await den(from7), a30 = await den(from30);
+  const per = async (from) => Object.fromEntries((await all(db, 'SELECT counter, COUNT(DISTINCT app_user_id) users, SUM(value) total FROM feature_counters WHERE day >= ? AND value > 0 GROUP BY counter', from)).map((r) => [r.counter, r]));
+  const p7 = await per(from7), p30 = await per(from30);
+  const adoption = Object.entries(FEATURES).map(([k, label]) => ({ counter: k, label, users_7d: p7[k]?.users || 0, pct_7d: pct1(p7[k]?.users || 0, a7),
+    users_30d: p30[k]?.users || 0, pct_30d: pct1(p30[k]?.users || 0, a30), total_30d: p30[k]?.total || 0 }));
+  const daily = await all(db, 'SELECT day, counter, SUM(value) total FROM feature_counters WHERE day >= ? GROUP BY day, counter ORDER BY day', from30);
+  const t = (k) => p30[k]?.total || 0, maps = t('handoff_maps'), waze = t('handoff_waze');
+  return { has_data: true, active_app_users_7d: a7, active_app_users_30d: a30, adoption, daily,
+    stops_per_route_30d: t('routes_started') ? Math.round((t('route_stops') / t('routes_started')) * 10) / 10 : null,
+    handoff_30d: { maps, waze, maps_pct: pct1(maps, maps + waze), waze_pct: pct1(waze, maps + waze) } };
+}
+
+// 10-23: Pro trial funnel + MRR from subscription_events (Play RTDN, stopscope-web migration 0028). Pro = $7.99/month.
+export const PRO_MONTHLY = 7.99;
+const ACTIVE_STATES = new Set(['SUBSCRIPTION_STATE_ACTIVE', 'SUBSCRIPTION_STATE_IN_GRACE_PERIOD']);
+const PAID_TYPES = new Set([1, 2, 7]);          // RECOVERED, RENEWED, RESTARTED (type 4 PURCHASED may be a trial start)
+export async function proSubs(db, now = Date.now()) {
+  const tests = await one(db, "SELECT COUNT(*) n, MAX(received_at) last FROM subscription_events WHERE kind='test'");
+  const ev = await all(db, "SELECT purchase_token tok, notification_type t, verified v, state, in_trial tr, expiry_time exp, COALESCE(event_time, received_at) at FROM subscription_events WHERE kind='subscription' AND purchase_token IS NOT NULL ORDER BY at, id");
+  const base = { test_notifications: tests.n || 0, last_test_at: tests.last || null };
+  if (!ev.length) return { has_data: false, ...base };
+  const since = now - 30 * DAY, toks = new Map();
+  for (const e of ev) { if (!toks.has(e.tok)) toks.set(e.tok, []); toks.get(e.tok).push(e); }
+  let trials = 0, purchases = 0, conv = 0, cancels = 0, paid = 0;
+  for (const list of toks.values()) {
+    const inWin = list.filter((e) => e.at >= since);
+    const buy = inWin.find((e) => e.t === 4);
+    if (buy) { purchases++; if (buy.tr === 1) trials++; }
+    const firstRenew = list.find((e) => e.t === 2);
+    if (firstRenew && firstRenew.at >= since) conv++;
+    if (inWin.some((e) => e.t === 3)) cancels++;
+    const last = list[list.length - 1];
+    const live = last.v ? ACTIVE_STATES.has(last.state) && last.tr !== 1 : PAID_TYPES.has(last.t) || (last.t === 4 && last.tr === 0);
+    if (live && !(last.exp && last.exp < now)) paid++;
+  }
+  return { has_data: true, ...base, window_days: 30, trial_starts: trials, new_subscriptions: purchases, conversions: conv, cancels,
+    active_paid: paid, mrr_usd: Math.round(paid * PRO_MONTHLY * 100) / 100, price: PRO_MONTHLY,
+    unverified_events: ev.filter((e) => !e.v).length, total_events: ev.length,
+    note: 'Conversions = first renewal (first paid charge after the trial). Unverified = raw Play notification, no Play API lookup.' };
+}
+
 export const COMING_SOON = {
-  feature_adoption: 'Coming soon (app counters)', pro_trial_funnel: 'Coming soon (Play notifications)', pro_mrr: 'Coming soon (Play notifications)',
   crash_free: 'Coming soon (Play reporting)', anr: 'Coming soon (Play reporting)', rating: 'Coming soon (Play reporting)',
   installs: 'Coming soon (Play reporting)', version_spread: 'Coming soon (Play reporting)' };
 
 export async function all_(db, now = Date.now()) {
   return { engagement: await engagement(db, now), cohorts: await cohorts(db, now), activation: await activation(db, now),
     signups_weekly: await signupsWeekly(db, now), gone_quiet: await goneQuiet(db, now), api_cost: await apiCost(db, now),
-    dispatch: await dispatchBiz(db, now), routes: await routesOps(db), coming_soon: COMING_SOON };
+    dispatch: await dispatchBiz(db, now), routes: await routesOps(db), features: await features(db, now), pro: await proSubs(db, now), coming_soon: COMING_SOON };
 }

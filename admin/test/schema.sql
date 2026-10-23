@@ -232,3 +232,33 @@ CREATE INDEX app_admin_keys_user ON app_admin_keys(app_user_id, revoked_at);
 CREATE INDEX app_admin_nonces_exp ON app_admin_nonces(expires_at);
 CREATE INDEX auth_nonces_exp ON auth_nonces(expires_at);
 CREATE INDEX export_log_company ON export_log(company_id, created_at);
+-- 10-23 (Dominic): anonymous daily feature counts from the app (counts only, no addresses/locations). Kept 90 days (src/prune.js).
+CREATE TABLE IF NOT EXISTS feature_counters (
+  day TEXT NOT NULL,            -- UTC YYYY-MM-DD the phone counted on
+  app_user_id TEXT NOT NULL,
+  counter TEXT NOT NULL,
+  value INTEGER NOT NULL DEFAULT 0,
+  updated_at INTEGER NOT NULL,
+  PRIMARY KEY (day, app_user_id, counter)
+);
+CREATE INDEX IF NOT EXISTS feature_counters_day ON feature_counters(day, counter);
+-- 10-23 (Dominic): Google Play Real-time Developer Notifications (POST /api/play/rtdn, src/rtdn.js). Kept 365 days (src/prune.js).
+-- verified=1 when the state came from purchases.subscriptionsv2.get; 0 = raw notification only (no Play credential on the Worker).
+CREATE TABLE IF NOT EXISTS subscription_events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  message_id TEXT NOT NULL UNIQUE,     -- Pub/Sub messageId (redelivery is idempotent)
+  received_at INTEGER NOT NULL,
+  event_time INTEGER,                  -- eventTimeMillis from Play
+  kind TEXT NOT NULL,                  -- 'subscription' | 'test' | 'other'
+  notification_type INTEGER,           -- SubscriptionNotification.notificationType
+  package_name TEXT,
+  subscription_id TEXT,
+  purchase_token TEXT,
+  verified INTEGER NOT NULL DEFAULT 0,
+  state TEXT,                          -- subscriptionsv2 subscriptionState (verified only)
+  in_trial INTEGER,                    -- 1/0 when verified and known, NULL otherwise
+  expiry_time INTEGER,
+  raw TEXT NOT NULL                    -- decoded notification JSON (no personal data: Play sends only token + ids)
+);
+CREATE INDEX IF NOT EXISTS subscription_events_time ON subscription_events(received_at);
+CREATE INDEX IF NOT EXISTS subscription_events_token ON subscription_events(purchase_token, received_at);
