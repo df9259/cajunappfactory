@@ -83,7 +83,7 @@ CREATE TABLE app_users (
   email_verified INTEGER NOT NULL DEFAULT 0,
   created_at INTEGER NOT NULL,
   last_sign_in_at INTEGER NOT NULL
-, web_user_id TEXT, tutorial_version INTEGER, last_seen_at INTEGER, sign_in_count INTEGER NOT NULL DEFAULT 0, pro_comp INTEGER DEFAULT 0);
+, web_user_id TEXT, tutorial_version INTEGER, last_seen_at INTEGER, sign_in_count INTEGER NOT NULL DEFAULT 0, pro_comp INTEGER DEFAULT 0, app_version TEXT, app_version_code INTEGER, app_version_at INTEGER);
 CREATE TABLE app_sessions (
   token_hash TEXT PRIMARY KEY,
   app_user_id TEXT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,

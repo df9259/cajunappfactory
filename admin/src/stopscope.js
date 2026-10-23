@@ -6,16 +6,21 @@ const ROWS = `WITH rows AS (
   SELECT 'app' AS kind, a.id, a.email, a.name, CASE WHEN a.google_sub IS NOT NULL THEN 'Google' ELSE 'Password' END AS method,
     a.created_at, a.last_sign_in_at AS last, d.id AS driver_id, d.account_deleted_at AS deleted_at,
     c.id AS company_id, c.name AS company, NULL AS role, c.free_license, COALESCE(a.pro_comp,0) AS comp,
-    MAX(COALESCE(a.last_seen_at, 0), a.last_sign_in_at) AS seen, a.last_seen_at, a.sign_in_count, CASE WHEN d.id IS NULL THEN 'personal' ELSE 'dispatch' END AS aud
+    MAX(COALESCE(a.last_seen_at, 0), a.last_sign_in_at) AS seen, a.last_seen_at, a.sign_in_count, CASE WHEN d.id IS NULL THEN 'personal' ELSE 'dispatch' END AS aud,
+    a.app_version AS av, a.app_version_code AS avc
   FROM app_users a LEFT JOIN drivers d ON d.email = a.email COLLATE NOCASE LEFT JOIN companies c ON c.id = d.company_id
   UNION ALL
   SELECT 'web', u.id, u.email, u.name,
     CASE WHEN u.google_sub IS NOT NULL AND u.pw_hash IS NOT NULL THEN 'Google + password' WHEN u.google_sub IS NOT NULL THEN 'Google' ELSE 'Password' END,
     u.created_at, (SELECT MAX(s.created_at) FROM sessions s WHERE s.user_id = u.id), NULL, NULL,
     c.id, c.name, m.role, c.free_license, COALESCE(u.pro_comp,0),
-    (SELECT MAX(s.created_at) FROM sessions s WHERE s.user_id = u.id), NULL, u.sign_in_count, 'dispatch'
+    (SELECT MAX(s.created_at) FROM sessions s WHERE s.user_id = u.id), NULL, u.sign_in_count, 'dispatch', NULL, NULL
   FROM users u LEFT JOIN memberships m ON m.user_id = u.id LEFT JOIN companies c ON c.id = m.company_id)
 SELECT * FROM rows WHERE (? = '' OR aud = ?) AND (? = 0 OR comp = 1) AND (? = '' OR email LIKE ? ESCAPE '\\' OR COALESCE(name,'') LIKE ? ESCAPE '\\' OR COALESCE(company,'') LIKE ? ESCAPE '\\')`;
+
+/** 0.3.31: "0.3.31 (116)"; apps before 0.3.31 never send a version. */
+export const OLD_VERSION = 'older than 0.3.31';
+export const versionLabel = (name, code) => name ? name + (code ? ' (' + code + ')' : '') : OLD_VERSION;
 
 export async function listUsers(db, { q = '', page = 1, type = '' } = {}) {
   q = String(q || '').trim().slice(0, 100);
@@ -29,7 +34,8 @@ export async function listUsers(db, { q = '', page = 1, type = '' } = {}) {
   const users = rs.map((r) => ({ kind: r.kind, id: r.id, email: r.email, name: r.name || null, method: r.method, created_at: r.created_at,
     last_sign_in_at: r.last || null, last_app_open: r.kind === 'app' ? (r.last_seen_at || null) : null, sign_ins: r.sign_in_count || 0,
     type: r.aud, driver: !!r.driver_id, deleted: !!r.deleted_at, company: r.company || null, role: r.role || null,
-    free_license: !!(r.company && r.free_license), pro_comp: !!r.comp, pro_play: null }));
+    free_license: !!(r.company && r.free_license), pro_comp: !!r.comp, pro_play: null,
+    app_version: r.kind === 'app' ? versionLabel(r.av, r.avc) : null }));
   return { q, type: pro ? 'pro' : aud, page, pages: Math.max(1, Math.ceil(total / PER_PAGE)), total, per_page: PER_PAGE, users };
 }
 
@@ -53,6 +59,8 @@ export async function overview(db, now = Date.now()) {
   for (let i = 29; i >= 0; i--) { const d = new Date(now - i * 86400e3).toISOString().slice(0, 10); out.signups.push({ day: d, n: m[d] || 0 }); }
   const g = await n('SELECT COUNT(*) n FROM app_users WHERE google_sub IS NOT NULL') + await n('SELECT COUNT(*) n FROM users WHERE google_sub IS NOT NULL');
   out.methods = { google: g, password: app + web - g };
+  out.versions_in_use = ((await db.prepare('SELECT app_version v, app_version_code c, COUNT(*) n FROM app_users GROUP BY v, c ORDER BY c IS NULL, c DESC, v DESC').all()).results || [])
+    .map((r) => ({ version: versionLabel(r.v, r.c), n: r.n }));
   out.recent_actions = (await db.prepare('SELECT action, target_kind, target_email, created_at FROM admin_audit ORDER BY created_at DESC, id DESC LIMIT 10').all()).results || [];
   return out;
 }
@@ -74,7 +82,7 @@ const ownedCompany = (db, webId) => webId ? db.prepare("SELECT c.id, c.name, c.f
 const APIS = ['geocode', 'routes', 'optimize', 'matrix', 'points', 'proof'];
 export async function userDetail(db, kind, id, now = Date.now()) {
   const t = await target(db, kind, id); if (!t) return null;
-  const app = t.appId ? await db.prepare('SELECT id, name, created_at, last_sign_in_at, last_seen_at, sign_in_count, COALESCE(pro_comp,0) pc, google_sub IS NOT NULL g FROM app_users WHERE id=?').bind(t.appId).first() : null;
+  const app = t.appId ? await db.prepare('SELECT id, name, created_at, last_sign_in_at, last_seen_at, sign_in_count, COALESCE(pro_comp,0) pc, google_sub IS NOT NULL g, app_version av, app_version_code avc FROM app_users WHERE id=?').bind(t.appId).first() : null;
   const web = t.webId ? await db.prepare('SELECT id, name, created_at, sign_in_count, email_verified_at, COALESCE(pro_comp,0) pc, google_sub IS NOT NULL g, pw_hash IS NOT NULL p FROM users WHERE id=?').bind(t.webId).first() : null;
   const co = await ownedCompany(db, t.webId);
   const member = !co && t.webId ? await db.prepare('SELECT c.name, m.role FROM memberships m JOIN companies c ON c.id=m.company_id WHERE m.user_id=?').bind(t.webId).first() : null;
@@ -100,7 +108,7 @@ export async function userDetail(db, kind, id, now = Date.now()) {
     app_account: !!app, website_account: !!web, sign_in: [...methods].join(' + ') || null,
     joined: Math.min(...[app && app.created_at, web && web.created_at].filter(Boolean)) || null,
     sign_ins: ((app && app.sign_in_count) || 0) + ((web && web.sign_in_count) || 0),
-    last_app_open: app ? app.last_seen_at || null : null,
+    last_app_open: app ? app.last_seen_at || null : null, app_version: app ? versionLabel(app.av, app.avc) : null,
     company: co ? co.name : member ? member.name : drv ? drv.name : null, role: co ? 'owner' : member ? member.role : drv ? 'driver' : null,
     pro_comp: !!((app && app.pc) || (web && web.pc)), pro_play: null,
     dispatch_license: co ? !!co.free_license : null, license_toggle: !!co,
