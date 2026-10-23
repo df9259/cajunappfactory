@@ -16,3 +16,4 @@ wrangler.json
 wrangler.jsonc
 package.json
 package-lock.json
+admin/

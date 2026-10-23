@@ -1,0 +1,3 @@
+{ "name": "cajunappfactory-admin", "private": true, "type": "module",
+  "scripts": { "test": "node --test test/*.test.js" },
+  "devDependencies": { "better-sqlite3": "^11.10.0" } }

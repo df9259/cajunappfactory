@@ -1,0 +1,12 @@
+{
+  // Cajun App Factory admin. Behind Cloudflare Access; the Worker also verifies the Access JWT itself and fails closed (403)
+  // until ACCESS_TEAM_DOMAIN and ACCESS_AUD are set.
+  "name": "cajunappfactory-admin",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "admin.cajunappfactory.com", "custom_domain": true }],
+  "vars": { "ACCESS_TEAM_DOMAIN": "", "ACCESS_AUD": "", "ADMIN_USER_ID": "018f22ea-3340-4f1d-a7b8-b5324d7fe41a" },
+  "d1_databases": [{ "binding": "DB", "database_name": "stopscope-dispatch", "database_id": "6b232409-6a72-41e7-9e93-e820b4b1179e" }]
+}
