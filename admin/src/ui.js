@@ -37,7 +37,7 @@ async function home(){crumb('Apps');const o=await api('/api/apps/stopscope/overv
  M.replaceChildren($('h1',{},'Your apps'),$('div',{cls:'sub'},'Tap an app for stats and users'),
   $('div',{cls:'card appcard',on:{click:()=>go('/apps/stopscope')}},$('div',{style:'display:flex;gap:12px;align-items:center'},$('div',{cls:'ico'},'S'),$('div',{},$('div',{style:'font-size:17px;font-weight:700'},'StopScope'),$('div',{cls:'muted'},'Android · stopscope.com'))),
    $('div',{cls:'grid',style:'grid-template-columns:1fr 1fr 1fr;margin-top:14px'},[['Users',n(o.app_users+o.website_users)],['Active 7d',n(o.active_7d)],['Rating','Not connected yet']].map(([a,b])=>$('div',{},$('div',{cls:'muted'},a),$('b',{style:'font-size:'+(b.length>8?'12':'20')+'px'},b))))))}
-async function overview(){crumb('Apps › StopScope');const[o,s]=await Promise.all([api('/api/apps/stopscope/overview'),api('/api/apps/stopscope/stats')]);
+async function overview(){crumb('Apps › StopScope');const[o,s,pl]=await Promise.all([api('/api/apps/stopscope/overview'),api('/api/apps/stopscope/stats'),api('/api/apps/stopscope/play').catch(()=>({}))]);
  const e=s.engagement,a=s.activation,r=s.routes,d=s.dispatch,c=s.api_cost,cs=s.coming_soon;const mx=Math.max(1,...o.signups.map(x=>x.n));
  M.replaceChildren($('div',{style:'display:flex;align-items:center;gap:12px'},$('h1',{},'StopScope'),$('div',{cls:'sp'}),$('button',{cls:'btn',on:{click:()=>go('/apps/stopscope/users')}},'Users')),
   $('div',{cls:'sub'},'Live from D1 stopscope-dispatch · aggregates only'),
@@ -52,9 +52,17 @@ async function overview(){crumb('Apps › StopScope');const[o,s]=await Promise.a
   $('h2',{},'Dispatch'),$('div',{cls:'grid tiles'},tile('MRR (est.)','$'+n(d.mrr_usd),d.mrr_note),tile('Paying companies',n(d.paying_companies)),tile('Billed seats',n(d.billed_seats)),tile('Drivers',n(d.drivers)),tile('Companies',n(o.companies),o.free_license_companies+' on free license'),tile('Churned',n(d.churned_companies),d.deleted_companies+' deleted'),
    tile('Status mix',Object.entries(d.status_mix).map(([k,v])=>k+' '+v).join(' · ')||'—'),tile('Route completion',pct(r.completion_pct),r.completed+' of '+r.routes+' routes'),tile('Stops done / skipped',n(r.stops_done)+' / '+n(r.stops_skipped),n(r.stops_pending)+' pending'),
    tile('Median route time',r.median_route_minutes==null?'—':r.median_route_minutes+' min'),tile('Invite acceptance',pct(r.invite_accept_pct),r.invites_accepted+' of '+r.invites),tile('Proof photo rate',pct(r.proof_photo_pct),'of done stops'),tile('Signature rate',pct(r.proof_signature_pct),'of done stops'),tile('Proof storage',r.proof_storage_mb+' MB','R2 stopscope-pod')),
-  $('h2',{},'Play & app data'),$('div',{cls:'grid tiles'},tile('Installs','Not connected yet','Play reporting',true),tile('Rating','Not connected yet','Play reviews',true),tile('Crash-free users','Not connected yet','Crashlytics',true),soon('ANR rate',cs.anr),soon('Version spread',cs.version_spread),),
+  playSec(pl),
   featureSec(s.features),proSec(s.pro),
   $('h2',{},'Gone quiet (14+ days)'),$('div',{cls:'card'},s.gone_quiet.length?table(['User','Account','Last seen'],s.gone_quiet.map(x=>[(x.name?x.name+' · ':'')+x.email,x.kind==='app'?'App':'Website',dt(x.last)])):$('p',{cls:'muted'},'Nobody yet.')))}
+function playSec(p){const st=(x,lbl,val,sub)=>!x?tile(lbl,'Waiting for first sync','daily at 06:00 CT',true):x.error&&!x.data?tile(lbl,/403/.test(x.error)?'Waiting for Play access':'Error',x.error,true):x.data.no_data?tile(lbl,'No data yet',(x.data.note||'Play needs more users')+(x.data.as_of?' · as of '+x.data.as_of:''),true):tile(lbl,val(x.data),sub(x.data)+(x.error?' · last sync failed':''));
+ return $('div',{},$('h2',{},'Play & app data'),$('div',{cls:'grid tiles'},
+  st(p.installs,'Installs',d=>n(d.total_user_installs),d=>n(d.installs_30d)+' new / '+n(d.uninstalls_30d)+' uninstalls, 30 days · '+d.as_of),
+  st(p.rating,'Rating',d=>d.avg+' ★',d=>d.count+' reviews · '+d.note),
+  st(p.crash,'Crash-free users',d=>(Math.round((100-d.rate_pct)*100)/100)+'%',d=>'28 days to '+d.as_of+' · '+n(d.users)+' users'),
+  st(p.anr,'ANR rate',d=>d.rate_pct+'%',d=>'28 days to '+d.as_of+' (bad: 0.47%+)'),
+  st(p.versions,'Version spread',d=>d.versions.slice(0,3).map(v=>v.version_code+': '+v.pct+'%').join(' · '),d=>'users by version code, 7 days to '+d.as_of)),
+  $('p',{cls:'muted',style:'font-size:12px'},'Synced daily from Google Play'+(p.crash&&p.crash.fetched_at?' · last run '+dt(p.crash.fetched_at):'')))}
 function featureSec(f){const h=$('h2',{},'Feature adoption');if(!f||!f.has_data)return $('div',{},h,$('div',{cls:'grid tiles'},tile('Feature adoption','No data yet','App feature counters (0.3.30+)',true)));
  const days=[...new Set(f.daily.map(x=>x.day))].sort(),keys=f.adoption.map(a=>a.counter),m={};for(const x of f.daily)m[x.day+'|'+x.counter]=x.total;
  return $('div',{},h,$('div',{cls:'grid tiles'},tile('Stops per route',f.stops_per_route_30d==null?'—':String(f.stops_per_route_30d),'route stops / routes started, 30 days'),tile('Maps vs Waze',pct(f.handoff_30d.maps_pct)+' / '+pct(f.handoff_30d.waze_pct),n(f.handoff_30d.maps)+' Maps · '+n(f.handoff_30d.waze)+' Waze, 30 days'),tile('Active app users',n(f.active_app_users_7d)+' / '+n(f.active_app_users_30d),'7 days / 30 days')),

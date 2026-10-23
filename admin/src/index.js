@@ -3,6 +3,7 @@ import { verifyAccess } from './access.js';
 import * as SS from './stopscope.js';
 import { PAGE } from './ui.js';
 import * as ST from './stats.js';
+import * as PL from './play.js';
 
 const SEC = { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'Referrer-Policy': 'no-referrer',
   'Content-Security-Policy': "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'" };
@@ -21,6 +22,7 @@ export async function handle(req, env, opts = {}) {
   if (!env.DB) return json({ error: 'no_db' }, 503);
   const sub = path.slice('/api/apps/stopscope/'.length);
   if (m === 'GET' && sub === 'overview') return json(await SS.overview(env.DB));
+  if (m === 'GET' && sub === 'play') return json(await PL.cached(env.DB));
   if (m === 'GET' && sub === 'stats') return json(await ST.all_(env.DB));
   if (m === 'GET' && sub === 'users') return json(await SS.listUsers(env.DB, { q: url.searchParams.get('q'), page: url.searchParams.get('page'), type: url.searchParams.get('type') }));
   if (m === 'GET' && sub === 'user') {
@@ -48,4 +50,4 @@ export async function handle(req, env, opts = {}) {
   }
   return json({ error: 'not_found' }, 404);
 }
-export default { fetch: (req, env) => handle(req, env) };
+export default { fetch: (req, env) => handle(req, env), scheduled: (ev, env, ctx) => ctx.waitUntil(PL.refresh(env)) };
