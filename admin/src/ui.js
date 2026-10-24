@@ -19,7 +19,9 @@ const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta n
 <div class="top"><a class="logo" href="/">Cajun App Factory <b>Admin</b></a><span class="muted" id="crumb">Apps</span><div class="sp"></div><div class="who" id="who"></div></div>
 <main class="wrap" id="main"><p class="muted">Loading…</p></main><script src="/admin.js"></script></body></html>`;
 const js = `'use strict';
-const $=(t,a={},...k)=>{const e=document.createElement(t);for(const[x,y]of Object.entries(a)){if(x==='on')for(const[ev,f]of Object.entries(y))e.addEventListener(ev,f);else if(x==='cls')e.className=y;else e.setAttribute(x,y)}for(const c of k.flat())if(c!=null)e.append(c.nodeType?c:String(c));return e};
+const kids=(k)=>k.flat(Infinity).filter(c=>c!=null&&c!==false).map(c=>c.nodeType?c:String(c));
+const $=(t,a={},...k)=>{const e=document.createElement(t);for(const[x,y]of Object.entries(a)){if(x==='on')for(const[ev,f]of Object.entries(y))e.addEventListener(ev,f);else if(x==='cls')e.className=y;else e.setAttribute(x,y)}e.append(...kids(k));return e};
+const put=(el,...k)=>el.replaceChildren(...kids(k));
 const api=async(p,o)=>{const r=await fetch(p,o);const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||r.status);return j};
 const M=document.getElementById('main'),nf=new Intl.NumberFormat();
 const n=(v)=>v==null?'—':typeof v==='number'?nf.format(v):v, pct=(v)=>v==null?'—':v+'%';
@@ -31,15 +33,15 @@ const table=(cols,rows)=>$('table',{},$('tr',{},cols.map(c=>$('th',{},c))),rows.
 const crumb=(t)=>{document.getElementById('crumb').textContent=t};
 api('/api/me').then(j=>{document.getElementById('who').textContent=j.email+' · via Cloudflare Access'}).catch(()=>{});
 function go(p){history.pushState({},'',p);route()} window.onpopstate=route;
-async function route(){const p=location.pathname;M.replaceChildren($('p',{cls:'muted'},'Loading…'));
- try{if(p==='/apps/stopscope')await overview();else if(p==='/apps/stopscope/users')await users();else await home()}catch(e){M.replaceChildren($('p',{cls:'err'},'Could not load: '+e.message))}}
+async function route(){const p=location.pathname;put(M,$('p',{cls:'muted'},'Loading…'));
+ try{if(p==='/apps/stopscope')await overview();else if(p==='/apps/stopscope/users')await users();else await home()}catch(e){put(M,$('p',{cls:'err'},'Could not load: '+e.message))}}
 async function home(){crumb('Apps');const o=await api('/api/apps/stopscope/overview');
- M.replaceChildren($('h1',{},'Your apps'),$('div',{cls:'sub'},'Tap an app for stats and users'),
+ put(M,$('h1',{},'Your apps'),$('div',{cls:'sub'},'Tap an app for stats and users'),
   $('div',{cls:'card appcard',on:{click:()=>go('/apps/stopscope')}},$('div',{style:'display:flex;gap:12px;align-items:center'},$('div',{cls:'ico'},'S'),$('div',{},$('div',{style:'font-size:17px;font-weight:700'},'StopScope'),$('div',{cls:'muted'},'Android · stopscope.com'))),
    $('div',{cls:'grid',style:'grid-template-columns:1fr 1fr 1fr;margin-top:14px'},[['Users',n(o.app_users+o.website_users)],['Active 7d',n(o.active_7d)],['Rating','Not connected yet']].map(([a,b])=>$('div',{},$('div',{cls:'muted'},a),$('b',{style:'font-size:'+(b.length>8?'12':'20')+'px'},b))))))}
 async function overview(){crumb('Apps › StopScope');const[o,s,pl]=await Promise.all([api('/api/apps/stopscope/overview'),api('/api/apps/stopscope/stats'),api('/api/apps/stopscope/play').catch(()=>({}))]);
  const e=s.engagement,a=s.activation,r=s.routes,d=s.dispatch,c=s.api_cost,cs=s.coming_soon;const mx=Math.max(1,...o.signups.map(x=>x.n));
- M.replaceChildren($('div',{style:'display:flex;align-items:center;gap:12px'},$('h1',{},'StopScope'),$('div',{cls:'sp'}),$('button',{cls:'btn',on:{click:()=>go('/apps/stopscope/users')}},'Users')),
+ put(M,$('div',{style:'display:flex;align-items:center;gap:12px'},$('h1',{},'StopScope'),$('div',{cls:'sp'}),$('button',{cls:'btn',on:{click:()=>go('/apps/stopscope/users')}},'Users')),
   $('div',{cls:'sub'},'Live from D1 stopscope-dispatch · aggregates only'),
   $('h2',{},'Users'),$('div',{cls:'grid tiles'},tile('App users',n(o.app_users),'app_users'),tile('Website users',n(o.website_users),'users'),tile('Personal (solo)',n(o.personal)),tile('Free Pro',n(o.pro_comp),'pro_comp'),tile('Versions in use',(o.versions_in_use||[]).slice(0,3).map(v=>v.version+': '+v.n).join(' · ')||'—','app users by version (from the app, 0.3.31+)'),
    tile('DAU',n(e.dau)),tile('WAU',n(e.wau)),tile('MAU',n(e.mau)),tile('Stickiness',pct(e.stickiness),'DAU / MAU'),tile('Activation',pct(a.rate_pct),a.activated+' of '+a.eligible+' (first 7 days)')),
@@ -77,16 +79,16 @@ async function users(){crumb('Apps › StopScope › Users');const j=await api('
  const det=$('div',{cls:'card'},$('p',{cls:'muted'},'Tap a user.'));
  const rows=j.users.map(u=>{const tr=$('tr',{cls:'row',on:{click:()=>{st.sel=u;[...tr.parentNode.children].forEach(x=>x.classList.remove('sel'));tr.classList.add('sel');detail(det,u)}}},$('td',{},$('b',{},u.name||'—'),$('div',{cls:'muted',style:'font-size:12px'},u.email)),
   $('td',{},u.pro_comp?$('span',{cls:'pill a'},'Pro (free)'):null,' ',u.type==='dispatch'?$('span',{cls:'pill g'},u.driver?'Driver':'Dispatch'):$('span',{cls:'pill'},'Personal'),u.free_license?$('span',{cls:'pill g'},'License'):null),$('td',{},(u.accounts||[u.kind]).map(a=>$('span',{cls:'pill'},a==='app'?'App':'Web'))),$('td',{cls:u.app_version&&u.app_version.startsWith('older')?'muted':''},u.app_version||'—'),$('td',{},ago(u.last_seen||u.last_app_open||u.last_sign_in_at)));return tr});
- M.replaceChildren($('h1',{},'Users'),$('div',{cls:'sub'},j.total+' rows · Play Pro is checked on the phone, so only free Pro shows here'),f,
+ put(M,$('h1',{},'Users'),$('div',{cls:'sub'},j.total+' rows · Play Pro is checked on the phone, so only free Pro shows here'),f,
   $('div',{cls:'grid split'},$('div',{cls:'card'},$('table',{},$('tr',{},['Person','Plan','Accounts','App version','Last seen'].map(c=>$('th',{},c))),rows),
    $('p',{},$('button',{cls:'btn o',on:{click:()=>{if(st.page>1){st.page--;users()}}}},'Previous'),' Page '+j.page+' of '+j.pages+' ',$('button',{cls:'btn o',on:{click:()=>{if(st.page<j.pages){st.page++;users()}}}},'Next'))),det))}
-async function detail(box,u){box.replaceChildren($('p',{cls:'muted'},'Loading…'));let d;try{d=await api('/api/apps/stopscope/user?'+new URLSearchParams({kind:u.kind,id:u.id}))}catch(e){box.replaceChildren($('p',{cls:'err'},e.message));return}
+async function detail(box,u){put(box,$('p',{cls:'muted'},'Loading…'));let d;try{d=await api('/api/apps/stopscope/user?'+new URLSearchParams({kind:u.kind,id:u.id}))}catch(e){put(box,$('p',{cls:'err'},e.message));return}
  const tog=(label,what,on,enabled,why)=>{const b=$('button',{cls:on?'btn':'btn o'},on?'On':'Off');if(!enabled){b.disabled=true;b.title=why}
   b.onclick=async()=>{if(!confirm((on?'Turn OFF ':'Turn ON ')+label+' for '+d.email+'?'))return;b.disabled=true;
    try{await api('/api/apps/stopscope/toggle',{method:'POST',headers:{'Content-Type':'application/json','X-Admin':'1'},body:JSON.stringify({kind:u.kind,id:u.id,what,on:!on})});detail(box,u)}catch(e){alert('Failed: '+e.message);b.disabled=false}};
   return $('div',{cls:'tg'},$('span',{},label,enabled?null:$('div',{cls:'muted',style:'font-size:11px'},why)),b)};
  const us=Object.entries(d.usage_7d).filter(([,v])=>v).map(([k,v])=>k+' '+v).join(' · ')||'none';
- box.replaceChildren($('div',{style:'font-size:18px;font-weight:700'},d.name||d.email),$('div',{cls:'muted'},d.email+(d.sign_in?' · '+d.sign_in:'')),
+ put(box,$('div',{style:'font-size:18px;font-weight:700'},d.name||d.email),$('div',{cls:'muted'},d.email+(d.sign_in?' · '+d.sign_in:'')),
   table(['',''],[['Accounts',[d.app_account&&'App',d.website_account&&'Website'].filter(Boolean).join(' + ')],['Joined',dt(d.joined)],['Sign-ins',n(d.sign_ins)],['Last app open',dt(d.last_app_open)],['App version',d.app_version||'—'],['Company',d.company?d.company+(d.role?' ('+d.role+')':''):'—'],['Routes / stops done',n(d.routes)+' / '+n(d.stops_done)],['API use 7d',us]]),
   tog('Free Pro','pro_comp',d.pro_comp,true,''),tog('Dispatch license','dispatch_license',!!d.dispatch_license,d.license_toggle,'Only for someone who owns a Dispatch company'),
   $('b',{},'Audit log'),d.audit.length?d.audit.map(x=>$('div',{cls:'muted',style:'font-size:12px'},x.action+' · '+dt(x.created_at))):$('div',{cls:'muted',style:'font-size:12px'},'No admin actions yet'),
