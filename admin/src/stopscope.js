@@ -52,28 +52,37 @@ export async function listUsers(db, { q = '', page = 1, type = '' } = {}) {
 }
 
 export async function overview(db, now = Date.now()) {
-  const wk = now - 7 * 86400e3;
-  const n = async (sql, ...b) => (await db.prepare(sql).bind(...b).first())?.n || 0;
-  const app = await n('SELECT COUNT(*) n FROM app_users'), web = await n('SELECT COUNT(*) n FROM users');
-  const personal = await n('SELECT COUNT(*) n FROM app_users a WHERE NOT EXISTS (SELECT 1 FROM drivers d WHERE d.email = a.email COLLATE NOCASE)');
-  const active = await n('SELECT COUNT(*) n FROM app_users WHERE MAX(COALESCE(last_seen_at,0), last_sign_in_at) >= ?', wk)
-    + await n('SELECT COUNT(DISTINCT user_id) n FROM sessions WHERE created_at >= ?', wk);
-  const pro_comp = await n('SELECT COUNT(*) n FROM (SELECT LOWER(email) e FROM app_users WHERE pro_comp=1 UNION SELECT LOWER(email) FROM users WHERE pro_comp=1)');
-  const out = { app_users: app, website_users: web, personal, active_7d: active, pro_comp,
-    companies: await n('SELECT COUNT(*) n FROM companies'), free_license_companies: await n('SELECT COUNT(*) n FROM companies WHERE free_license=1'),
-    drivers: await n('SELECT COUNT(*) n FROM drivers WHERE account_deleted_at IS NULL'), dispatch_routes: await n('SELECT COUNT(*) n FROM routes'),
+  const wk = now - 7 * 86400e3, since = now - 30 * 86400e3;
+  // 10-24 optimization audit: one D1 batch (one round trip) instead of 16 sequential queries; the same SQL and the same result.
+  const Q = {
+    app: ['SELECT COUNT(*) n FROM app_users'], web: ['SELECT COUNT(*) n FROM users'],
+    personal: ['SELECT COUNT(*) n FROM app_users a WHERE NOT EXISTS (SELECT 1 FROM drivers d WHERE d.email = a.email COLLATE NOCASE)'],
+    activeApp: ['SELECT COUNT(*) n FROM app_users WHERE MAX(COALESCE(last_seen_at,0), last_sign_in_at) >= ?', wk],
+    activeWeb: ['SELECT COUNT(DISTINCT user_id) n FROM sessions WHERE created_at >= ?', wk],
+    pro_comp: ['SELECT COUNT(*) n FROM (SELECT LOWER(email) e FROM app_users WHERE pro_comp=1 UNION SELECT LOWER(email) FROM users WHERE pro_comp=1)'],
+    companies: ['SELECT COUNT(*) n FROM companies'], free: ['SELECT COUNT(*) n FROM companies WHERE free_license=1'],
+    drivers: ['SELECT COUNT(*) n FROM drivers WHERE account_deleted_at IS NULL'], routes: ['SELECT COUNT(*) n FROM routes'],
+    signups: [`SELECT d, COUNT(*) n FROM (SELECT strftime('%Y-%m-%d', created_at/1000, 'unixepoch') d FROM app_users WHERE created_at >= ?
+    UNION ALL SELECT strftime('%Y-%m-%d', created_at/1000, 'unixepoch') FROM users WHERE created_at >= ?) GROUP BY d`, since, since],
+    gApp: ['SELECT COUNT(*) n FROM app_users WHERE google_sub IS NOT NULL'], gWeb: ['SELECT COUNT(*) n FROM users WHERE google_sub IS NOT NULL'],
+    versions: ['SELECT app_version v, app_version_code c, COUNT(*) n FROM app_users GROUP BY v, c ORDER BY c IS NULL, c DESC, v DESC'],
+    recent: ['SELECT action, target_kind, target_email, created_at FROM admin_audit ORDER BY created_at DESC, id DESC LIMIT 10'],
+  };
+  const keys = Object.keys(Q);
+  const res = await db.batch(keys.map((k) => { const [sql, ...b] = Q[k]; const st = db.prepare(sql); return b.length ? st.bind(...b) : st; }));
+  const R = Object.fromEntries(keys.map((k, i) => [k, (res[i] && res[i].results) || []]));
+  const n = (k) => (R[k][0] && R[k][0].n) || 0;
+  const app = n('app'), web = n('web');
+  const out = { app_users: app, website_users: web, personal: n('personal'), active_7d: n('activeApp') + n('activeWeb'), pro_comp: n('pro_comp'),
+    companies: n('companies'), free_license_companies: n('free'), drivers: n('drivers'), dispatch_routes: n('routes'),
     not_connected: { installs: 'Not connected yet', rating: 'Not connected yet', crash_free: 'Not connected yet' } };
   // sign-ups per day, last 30 days (UTC), app + website
-  const since = now - 30 * 86400e3;
-  const rows = (await db.prepare(`SELECT d, COUNT(*) n FROM (SELECT strftime('%Y-%m-%d', created_at/1000, 'unixepoch') d FROM app_users WHERE created_at >= ?
-    UNION ALL SELECT strftime('%Y-%m-%d', created_at/1000, 'unixepoch') FROM users WHERE created_at >= ?) GROUP BY d`).bind(since, since).all()).results || [];
-  const m = Object.fromEntries(rows.map((r) => [r.d, r.n])); out.signups = [];
+  const m = Object.fromEntries(R.signups.map((r) => [r.d, r.n])); out.signups = [];
   for (let i = 29; i >= 0; i--) { const d = new Date(now - i * 86400e3).toISOString().slice(0, 10); out.signups.push({ day: d, n: m[d] || 0 }); }
-  const g = await n('SELECT COUNT(*) n FROM app_users WHERE google_sub IS NOT NULL') + await n('SELECT COUNT(*) n FROM users WHERE google_sub IS NOT NULL');
+  const g = n('gApp') + n('gWeb');
   out.methods = { google: g, password: app + web - g };
-  out.versions_in_use = ((await db.prepare('SELECT app_version v, app_version_code c, COUNT(*) n FROM app_users GROUP BY v, c ORDER BY c IS NULL, c DESC, v DESC').all()).results || [])
-    .map((r) => ({ version: versionLabel(r.v, r.c), n: r.n }));
-  out.recent_actions = (await db.prepare('SELECT action, target_kind, target_email, created_at FROM admin_audit ORDER BY created_at DESC, id DESC LIMIT 10').all()).results || [];
+  out.versions_in_use = R.versions.map((r) => ({ version: versionLabel(r.v, r.c), n: r.n }));
+  out.recent_actions = R.recent;
   return out;
 }
 

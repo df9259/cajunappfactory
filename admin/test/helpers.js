@@ -9,7 +9,8 @@ export function makeDB() {
     run: async () => { const s = sql.prepare(q); return s.reader ? { results: s.all(...args) } : s.run(...args); },
     all: async () => ({ results: sql.prepare(q).all(...args) }),
   });
-  return { prepare: (q) => stmt(q), _sql: sql };
+  // D1 batch: the statements run in order, each answer as { results } (like .all()).
+  return { prepare: (q) => stmt(q), batch: async (list) => Promise.all(list.map((s) => s.all())), _sql: sql };
 }
 export const TEAM = 'cajun.cloudflareaccess.com', AUD = 'a'.repeat(64);
 const b64u = (b) => Buffer.from(b).toString('base64url');
