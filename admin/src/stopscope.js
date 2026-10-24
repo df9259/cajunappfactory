@@ -2,20 +2,31 @@
 // Never selects password hashes/salts, tokens or Stripe ids.
 export const PER_PAGE = 50;
 const likeEsc = (q) => '%' + q.replace(/[\\%_]/g, (c) => '\\' + c) + '%';
-const ROWS = `WITH rows AS (
-  SELECT 'app' AS kind, a.id, a.email, a.name, CASE WHEN a.google_sub IS NOT NULL THEN 'Google' ELSE 'Password' END AS method,
-    a.created_at, a.last_sign_in_at AS last, d.id AS driver_id, d.account_deleted_at AS deleted_at,
-    c.id AS company_id, c.name AS company, NULL AS role, c.free_license, COALESCE(a.pro_comp,0) AS comp,
-    MAX(COALESCE(a.last_seen_at, 0), a.last_sign_in_at) AS seen, a.last_seen_at, a.sign_in_count, CASE WHEN d.id IS NULL THEN 'personal' ELSE 'dispatch' END AS aud,
-    a.app_version AS av, a.app_version_code AS avc
-  FROM app_users a LEFT JOIN drivers d ON d.email = a.email COLLATE NOCASE LEFT JOIN companies c ON c.id = d.company_id
+// One row per person (10-23): an app account absorbs its website account, matched by web_user_id first, then by the same
+// email (case-insensitive, trimmed). Website accounts nobody matched stay as their own row.
+const ROWS = `WITH am AS (
+  SELECT a.*, COALESCE((SELECT u.id FROM users u WHERE u.id = a.web_user_id),
+    (SELECT u.id FROM users u WHERE LOWER(TRIM(u.email)) = LOWER(TRIM(a.email)) ORDER BY u.created_at LIMIT 1)) AS wid FROM app_users a),
+wlast AS (SELECT user_id, MAX(created_at) AS t FROM sessions GROUP BY user_id),
+rows AS (
+  SELECT 'app' AS kind, a.id, a.email, COALESCE(a.name, u.name) AS name, CASE WHEN a.google_sub IS NOT NULL OR u.google_sub IS NOT NULL THEN 'Google' ELSE 'Password' END AS method,
+    MIN(a.created_at, COALESCE(u.created_at, a.created_at)) AS created_at, MAX(a.last_sign_in_at, COALESCE(wl.t, 0)) AS last, d.id AS driver_id, d.account_deleted_at AS deleted_at,
+    COALESCE(c.id, wc.id) AS company_id, COALESCE(c.name, wc.name) AS company, CASE WHEN c.id IS NULL THEN m.role END AS role, COALESCE(c.free_license, wc.free_license) AS free_license,
+    MAX(COALESCE(a.pro_comp,0), COALESCE(u.pro_comp,0)) AS comp,
+    MAX(COALESCE(a.last_seen_at, 0), a.last_sign_in_at, COALESCE(wl.t, 0)) AS seen, a.last_seen_at, a.sign_in_count + COALESCE(u.sign_in_count,0) AS sign_in_count,
+    CASE WHEN d.id IS NULL AND m.user_id IS NULL THEN 'personal' ELSE 'dispatch' END AS aud,
+    a.app_version AS av, a.app_version_code AS avc, 1 AS has_app, u.id IS NOT NULL AS has_web
+  FROM am a LEFT JOIN users u ON u.id = a.wid LEFT JOIN wlast wl ON wl.user_id = u.id
+    LEFT JOIN drivers d ON d.email = a.email COLLATE NOCASE LEFT JOIN companies c ON c.id = d.company_id
+    LEFT JOIN memberships m ON m.user_id = u.id LEFT JOIN companies wc ON wc.id = m.company_id
   UNION ALL
   SELECT 'web', u.id, u.email, u.name,
     CASE WHEN u.google_sub IS NOT NULL AND u.pw_hash IS NOT NULL THEN 'Google + password' WHEN u.google_sub IS NOT NULL THEN 'Google' ELSE 'Password' END,
-    u.created_at, (SELECT MAX(s.created_at) FROM sessions s WHERE s.user_id = u.id), NULL, NULL,
+    u.created_at, wl.t, NULL, NULL,
     c.id, c.name, m.role, c.free_license, COALESCE(u.pro_comp,0),
-    (SELECT MAX(s.created_at) FROM sessions s WHERE s.user_id = u.id), NULL, u.sign_in_count, 'dispatch', NULL, NULL
-  FROM users u LEFT JOIN memberships m ON m.user_id = u.id LEFT JOIN companies c ON c.id = m.company_id)
+    wl.t, NULL, u.sign_in_count, 'dispatch', NULL, NULL, 0, 1
+  FROM users u LEFT JOIN wlast wl ON wl.user_id = u.id LEFT JOIN memberships m ON m.user_id = u.id LEFT JOIN companies c ON c.id = m.company_id
+  WHERE u.id NOT IN (SELECT wid FROM am WHERE wid IS NOT NULL))
 SELECT * FROM rows WHERE (? = '' OR aud = ?) AND (? = 0 OR comp = 1) AND (? = '' OR email LIKE ? ESCAPE '\\' OR COALESCE(name,'') LIKE ? ESCAPE '\\' OR COALESCE(company,'') LIKE ? ESCAPE '\\')`;
 
 /** 0.3.31: "0.3.31 (116)"; apps before 0.3.31 never send a version. */
@@ -35,7 +46,8 @@ export async function listUsers(db, { q = '', page = 1, type = '' } = {}) {
     last_sign_in_at: r.last || null, last_app_open: r.kind === 'app' ? (r.last_seen_at || null) : null, sign_ins: r.sign_in_count || 0,
     type: r.aud, driver: !!r.driver_id, deleted: !!r.deleted_at, company: r.company || null, role: r.role || null,
     free_license: !!(r.company && r.free_license), pro_comp: !!r.comp, pro_play: null,
-    app_version: r.kind === 'app' ? versionLabel(r.av, r.avc) : null }));
+    app_version: r.kind === 'app' ? versionLabel(r.av, r.avc) : null,
+    last_seen: r.seen || null, accounts: [r.has_app && 'app', r.has_web && 'web'].filter(Boolean) }));
   return { q, type: pro ? 'pro' : aud, page, pages: Math.max(1, Math.ceil(total / PER_PAGE)), total, per_page: PER_PAGE, users };
 }
 
@@ -71,9 +83,10 @@ export async function target(db, kind, id) {
   const t = kind === 'app' ? await db.prepare('SELECT id, email, web_user_id FROM app_users WHERE id=?').bind(id).first()
     : kind === 'web' ? await db.prepare('SELECT id, email FROM users WHERE id=?').bind(id).first() : null;
   if (!t) return null;
-  const app = kind === 'app' ? t : await db.prepare('SELECT id FROM app_users WHERE email=? COLLATE NOCASE').bind(t.email).first();
+  const app = kind === 'app' ? t : await db.prepare('SELECT id FROM app_users WHERE web_user_id=?').bind(t.id).first()
+    || await db.prepare('SELECT id FROM app_users WHERE LOWER(TRIM(email))=LOWER(TRIM(?))').bind(t.email).first();
   const web = kind === 'web' ? t : (t.web_user_id ? await db.prepare('SELECT id, email FROM users WHERE id=?').bind(t.web_user_id).first() : null)
-    || await db.prepare('SELECT id, email FROM users WHERE email=? COLLATE NOCASE').bind(t.email).first();
+    || await db.prepare('SELECT id, email FROM users WHERE LOWER(TRIM(email))=LOWER(TRIM(?)) ORDER BY created_at LIMIT 1').bind(t.email).first();
   return { kind, id: t.id, email: t.email, appId: app ? app.id : null, webId: web ? web.id : null };
 }
 /** Company this person owns on the website (the one a Dispatch license applies to). */

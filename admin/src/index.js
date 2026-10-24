@@ -40,7 +40,8 @@ export async function handle(req, env, opts = {}) {
     if (!t) return json({ error: 'not_found' }, 404);
     if (what === 'pro_comp') {
       await SS.setProComp(env.DB, t, on);
-      await SS.audit(env.DB, env.ADMIN_USER_ID, on ? 'pro-comp-on' : 'pro-comp-off', t.kind, t.id, t.email);
+      // one audit line per account changed (app and/or web)
+      for (const [k, id] of [['app', t.appId], ['web', t.webId]]) if (id) await SS.audit(env.DB, env.ADMIN_USER_ID, on ? 'pro-comp-on' : 'pro-comp-off', k, id, t.email);
       return json({ ok: true, pro_comp: on });
     }
     const r = await SS.setLicense(env.DB, t, on);
