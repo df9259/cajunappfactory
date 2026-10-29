@@ -87,10 +87,13 @@ async function detail(box,u){put(box,$('p',{cls:'muted'},'Loading…'));let d;tr
   b.onclick=async()=>{if(!confirm((on?'Turn OFF ':'Turn ON ')+label+' for '+d.email+'?'))return;b.disabled=true;
    try{await api('/api/apps/stopscope/toggle',{method:'POST',headers:{'Content-Type':'application/json','X-Admin':'1'},body:JSON.stringify({kind:u.kind,id:u.id,what,on:!on})});detail(box,u)}catch(e){alert('Failed: '+e.message);b.disabled=false}};
   return $('div',{cls:'tg'},$('span',{},label,enabled?null:$('div',{cls:'muted',style:'font-size:11px'},why)),b)};
+ const act=(label,what)=>$('button',{cls:'btn o',on:{click:async(e)=>{if(!confirm(label+' for '+d.email+'?'))return;e.target.disabled=true;
+  try{await api('/api/apps/stopscope/action',{method:'POST',headers:{'Content-Type':'application/json','X-Admin':'1'},body:JSON.stringify({kind:u.kind,id:u.id,what})});detail(box,u)}catch(x){alert('Failed: '+x.message);e.target.disabled=false}}}},label);
  const us=Object.entries(d.usage_7d).filter(([,v])=>v).map(([k,v])=>k+' '+v).join(' · ')||'none';
  put(box,$('div',{style:'font-size:18px;font-weight:700'},d.name||d.email),$('div',{cls:'muted'},d.email+(d.sign_in?' · '+d.sign_in:'')),
   table(['',''],[['Accounts',[d.app_account&&'App',d.website_account&&'Website'].filter(Boolean).join(' + ')],['Joined',dt(d.joined)],['Sign-ins',n(d.sign_ins)],['Last app open',dt(d.last_app_open)],['App version',d.app_version||'—'],['Company',d.company?d.company+(d.role?' ('+d.role+')':''):'—'],['Routes / stops done',n(d.routes)+' / '+n(d.stops_done)],['API use 7d',us]]),
   tog('Free Pro','pro_comp',d.pro_comp,true,''),tog('Dispatch license','dispatch_license',!!d.dispatch_license,d.license_toggle,'Only for someone who owns a Dispatch company'),
+  $('div',{cls:'tg'},d.app_account?act('Show tutorial again','tutorial'):null,' ',act('Sign out all devices','signout')),
   $('b',{},'Audit log'),d.audit.length?d.audit.map(x=>$('div',{cls:'muted',style:'font-size:12px'},x.action+' · '+dt(x.created_at))):$('div',{cls:'muted',style:'font-size:12px'},'No admin actions yet'),
   $('div',{cls:'muted',style:'font-size:11px;margin-top:10px'},'Every toggle is written to admin_audit.'))}
 route();`;

@@ -10,7 +10,7 @@ export function makeDB() {
     all: async () => ({ results: sql.prepare(q).all(...args) }),
   });
   // D1 batch: the statements run in order, each answer as { results } (like .all()).
-  return { prepare: (q) => stmt(q), batch: async (list) => Promise.all(list.map((s) => s.all())), _sql: sql };
+  return { prepare: (q) => stmt(q), batch: async (list) => Promise.all(list.map((s) => s.run())), _sql: sql };
 }
 export const TEAM = 'cajun.cloudflareaccess.com', AUD = 'a'.repeat(64);
 const b64u = (b) => Buffer.from(b).toString('base64url');

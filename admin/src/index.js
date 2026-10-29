@@ -49,6 +49,24 @@ export async function handle(req, env, opts = {}) {
     await SS.audit(env.DB, env.ADMIN_USER_ID, on ? 'license-on' : 'license-off', t.kind, t.id, t.email);
     return json({ ok: true, dispatch_license: on });
   }
+  if (m === 'POST' && sub === 'action') {          // 10-29: stopscope.com admin parity (tutorial, sign out everywhere)
+    if (req.headers.get('X-Admin') !== '1' || req.headers.get('Origin') !== url.origin) return json({ error: 'csrf' }, 403);
+    if (!env.ADMIN_USER_ID) return json({ error: 'no_admin_id' }, 503);
+    let b; try { b = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
+    const what = b && b.what;
+    if (!['tutorial', 'signout'].includes(what)) return json({ error: 'bad_action' }, 400);
+    const t = await SS.target(env.DB, String(b.kind || ''), b.id);
+    if (!t) return json({ error: 'not_found' }, 404);
+    if (what === 'tutorial') {
+      if (!t.appId) return json({ error: 'no_app_account' }, 409);
+      const v = await SS.resetTutorial(env.DB, t.appId);
+      await SS.audit(env.DB, env.ADMIN_USER_ID, 'tutorial', t.kind, t.id, t.email);
+      return json({ ok: true, tutorial: v });
+    }
+    await SS.signOutAll(env.DB, t);
+    await SS.audit(env.DB, env.ADMIN_USER_ID, 'signout', t.kind, t.id, t.email);
+    return json({ ok: true });
+  }
   return json({ error: 'not_found' }, 404);
 }
 export default { fetch: (req, env) => handle(req, env), scheduled: (ev, env, ctx) => ctx.waitUntil(PL.refresh(env)) };

@@ -155,3 +155,19 @@ export async function setLicense(db, t, on) {
   else await db.prepare('UPDATE companies SET free_license=0 WHERE id=?').bind(co.id).run();
   return { company_id: co.id, on: !!on };
 }
+/** stopscope-web resetUserById: this user's tutorial override = the larger of global and theirs, plus 1 (the app shows it again). */
+export async function resetTutorial(db, appId) {
+  const g = Number((await db.prepare("SELECT value FROM app_settings WHERE key='tutorial_version'").first())?.value);
+  const u = await db.prepare('SELECT tutorial_version v FROM app_users WHERE id=?').bind(appId).first();
+  if (!u) return null;
+  const v = Math.max(Number.isInteger(g) && g > 0 ? g : 1, Number(u.v) || 0) + 1;
+  await db.prepare('UPDATE app_users SET tutorial_version=? WHERE id=?').bind(v, appId).run();
+  return v;
+}
+/** stopscope-web signOutAll: every app and website session of this person. */
+export async function signOutAll(db, t) {
+  const st = [];
+  if (t.appId) st.push(db.prepare('DELETE FROM app_sessions WHERE app_user_id=?').bind(t.appId));
+  if (t.webId) st.push(db.prepare('DELETE FROM sessions WHERE user_id=?').bind(t.webId));
+  if (st.length) await db.batch(st);
+}
