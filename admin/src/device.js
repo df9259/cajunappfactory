@@ -19,7 +19,7 @@ export function derToRaw(d) {
   }
   return out;
 }
-const cookieOf = (req) => (/(?:^|;\s*)caf_unlock=([\w-]{20,100})/.exec(req.headers.get('Cookie') || '') || [])[1];
+const cookieOf = (req) => (/(?:^|;\s*)caf_unlock=([\w-]{20,100})/.exec(req.headers.get('Cookie') || '') || [])[1] || (/^[\w-]{20,100}$/.exec(req.headers.get('X-Unlock') || '') || [])[0];          // 0.2.0: native app sends X-Unlock
 const setCookie = (v, age) => `caf_unlock=${v}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${age}`;
 
 export async function enrol(db, who, b, now = Date.now()) {
