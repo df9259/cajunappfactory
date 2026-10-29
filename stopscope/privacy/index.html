@@ -30,7 +30,7 @@
   <main id="main" class="app-main policy">
     <div class="wrap">
     <h1>StopScope privacy policy</h1>
-<p>Effective October 14, 2026.</p>
+<p>Effective October 29, 2026.</p>
 <p>This policy covers <strong>StopScope</strong>, the route planner app for Android from Cajun App Factory, and <strong>StopScope Dispatch</strong>, the website at stopscope.com that businesses use to plan routes and send them to their drivers. The app was called MyStops before a rename. "We" and "us" mean Cajun App Factory. Questions go to <a href="mailto:support@cajunappfactory.com">support@cajunappfactory.com</a>.</p>
 <h2>Summary</h2>
 <ul>
@@ -70,11 +70,16 @@
 - for StopScope Pro, a hashed copy of your Google Play purchase token and which phones use it (up to 3),
 - IDs of reward ads you watched (deleted after 35 days).</p>
 <p>Purchase records are deleted when the purchase is no longer active, and in any case 35 days after your phone last sent it. Installs that stay unverified and unused are deleted after 60 days. For sign-in security, stopscope.com also keeps your IP address in a short-lived rate-limit counter to block repeated failed sign-in attempts.</p>
+<h2>Crash reports</h2>
+<p>The Android app uses Firebase Crashlytics, a Google service, to send us crash reports. If the app crashes or hits an error, Crashlytics collects crash logs and diagnostics: the technical error details (stack trace), your device model, Android version, the app version, a random installation ID, and whether the app is in personal or driver mode and whether Pro is active. Crash reports never include your addresses, routes, names or locations; the app strips addresses, emails and numbers from error messages before sending them.</p>
+<p>We use crash reports only to find and fix bugs. They are not sold or shared for advertising. Crash reports are on by default; you can turn them off any time in Settings &gt; About &gt; Send crash reports, which also deletes reports that haven't been sent yet. Google processes this data under the <a href="https://firebase.google.com/support/privacy">Firebase privacy terms</a> and keeps crash reports for 90 days.</p>
 <h2>Purchases</h2>
 <p><strong>In the app.</strong> StopScope Pro is a subscription through Google Play Billing. Google handles the payment, and we never see your card. Our server checks the purchase with Google and keeps the hashed purchase token described above.</p>
 <p><strong>On stopscope.com.</strong> Businesses pay for StopScope Dispatch on stopscope.com. Payments are processed by Stripe, which collects and stores card details under its own <a href="https://stripe.com/privacy">privacy policy</a>. We never receive or store card numbers. We keep the Stripe customer and subscription IDs, the plan, the number of driver seats and the billing status.</p>
 <h2>StopScope Dispatch (for businesses and their drivers)</h2>
 <p>StopScope Dispatch lets a business ("the company") plan routes on stopscope.com and send them to its drivers in the app. The company decides which drivers to add by email address, and it enters the driver's name and phone number. The company is responsible for how it uses its drivers' and customers' information. For this data we act as a service provider (processor) for the company. If you want to access or delete data a company holds about you, contact that company. We will help it respond.</p>
+<p><strong>Feature-use counts.</strong> When you are signed in to the app, it sends stopscope.com a daily count of how often some features were used (for example route optimizations, imports and hand-offs to Google Maps or Waze), linked to your app account. The counts never include addresses, locations, stop names or route names. We use them only to understand which features are used and to improve the app, and we delete them 90 days after the day they count.</p>
+<p><strong>Invite emails.</strong> When a company adds you as a driver, we send one email to the address it entered, from no-reply@stopscope.com, saying which company added you and how to install the app and sign in. The company can resend it a few times. If you don't have a StopScope account yet, the email has a single-use link that expires after 7 days. We store only a scrambled (hashed) copy of that link. We keep a record of each invite we send (company, your email address, and the time) for security and to prevent abuse. We don't tell the company whether your email already has a StopScope account.</p>
 <p><strong>Information the company enters.</strong> Route names and dates, start addresses, stop addresses, customer contact names and phone numbers, notes and item lists. We store these to run the service for the company.</p>
 <p><strong>What the company sees about its drivers, in Dispatch mode only:</strong>
 - <strong>Your name</strong> and email address, as the company entered them.
@@ -84,15 +89,16 @@
 - <strong>Miles and fuel:</strong> miles driven on Dispatch routes, odometer readings and gas receipts (including photos).</p>
 <p>The company doesn't see your personal StopScope routes, stops, miles or anything you did outside Dispatch mode.</p>
 <p><strong>How long Dispatch data is kept:</strong>
-- Location history from Dispatch routes: 90 days, then deleted.
-- Miles, odometer readings, gas receipts, delivery receipts, photos and signatures: while the company's subscription is active, plus 1 year after it ends, then deleted.
+- Daily feature-use counts: 90 days, then deleted.
+- Location history from Dispatch routes: the individual location points are deleted 90 days after they are recorded, once the route's miles and driven path have been saved from them (and in any case within 120 days). The simplified driven path of each route and the location recorded when a stop is marked done are part of the delivery record and are kept like the other delivery records below. This applies to every company, whatever its subscription.
+- Miles, odometer readings, gas receipts, delivery receipts, photos and signatures: while the company's subscription or free license is active, plus 1 year after the subscription ends, then deleted.
 - Routes, stops and driver lists: while the company's account is active, or until the company deletes them.</p>
 <h2>Who it is shared with</h2>
 <ul>
 <li><strong>Google Maps Platform</strong> (Maps SDK, Geocoding, Places and Routes): stop addresses and, when the app places stops or draws the road line, your location, sent through our route service. The next stop opens in Google Maps (or Waze, if you choose it), which handles the address under its own policy.</li>
 <li><strong>OpenStreetMap Nominatim:</strong> if Google can't name a spot you long-press on the map, its coordinates are sent there to look up an address.</li>
-<li><strong>jsDelivr:</strong> if the phone's built-in text reader isn't available, the app downloads a backup text reader. Only that download request goes there. Your photos are not sent.</li>
 <li><strong>Google Play</strong> (Billing and Integrity) and <strong>Google Sign-In</strong>.</li>
+<li><strong>Google Firebase Crashlytics</strong>: crash logs and diagnostics (above), unless you turn crash reports off.</li>
 <li><strong>Google AdMob</strong>, for ads in the free version (below).</li>
 <li><strong>Stripe</strong>, for company billing on stopscope.com.</li>
 <li><strong>Cloudflare</strong>, which hosts our servers and database (Cloudflare Workers and D1) and sends our account emails.</li>
