@@ -105,6 +105,7 @@ async function admins(){crumb('Admins');const j=await api('/api/admins');
  put(M,$('h1',{},'Admins'),$('div',{cls:'sub'},'Who can open Cajun App Factory Admin. Admins can do everything except manage admins.'),
   $('div',{cls:'card'},$('b',{},'Invite by email'),msg,f),
   $('div',{cls:'card'},$('b',{},'Pending invites'),j.invites.length?table(['Email','Sent','',''],j.invites.map(i=>[i.email,dt(i.created_at),i.expired?'Expired':'Expires '+dt(i.expires_at),j.invites_on?btn('Revoke',()=>post('/api/admins/revoke',{id:i.id})):''])):$('p',{cls:'muted'},'None')),
+  $('div',{cls:'card'},$('b',{},'Devices (fingerprint unlock)'),j.devices.length?table(['Admin','Device','Added','Last unlock',''],j.devices.map(d=>[d.email,d.label||'Phone',dt(d.created_at),d.last_used_at?dt(d.last_used_at):'Never',btn('Revoke device',()=>post('/api/admins/device-revoke',{id:d.id}))])):$('p',{cls:'muted'},'No phones enrolled yet.')),
   $('div',{cls:'card'},$('b',{},'Admins'),table(['Email','Role',''],[[j.owner,'Owner','']].concat(j.admins.map(a=>[a.email,'Admin',j.invites_on?btn('Remove',()=>post('/api/admins/remove',{email:a.email})):''])))))}
 route();`;
 export const PAGE = { html, css, js };

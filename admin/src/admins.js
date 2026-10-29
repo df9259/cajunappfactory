@@ -1,5 +1,6 @@
 // 10-29 (Dominic): invite admins by email. Owner = ALLOWED_EMAIL only; invited admins get everything except managing admins.
 import { ALLOWED_EMAIL } from './access.js';
+import { revokeAllFor } from './device.js';
 import { randomToken, sha256, sendMail, inviteMail, rateOk } from './mail.js';
 export const INVITE_TTL = 7 * 86400e3, ORIGIN = 'https://admin.cajunappfactory.com';
 export const validEmail = (e) => typeof e === 'string' && e.length <= 254 && /^[^\s@<>"',;]+@[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(e);
@@ -70,5 +71,6 @@ export async function remove(env, email, { now = Date.now(), fetcher = fetch } =
   await accessPolicy(env, email, false, fetcher);
   await env.DB.batch([env.DB.prepare('UPDATE caf_admins SET removed_at=? WHERE email=?').bind(now, email),
     env.DB.prepare('UPDATE caf_invites SET revoked_at=? WHERE email=? AND used_at IS NULL AND revoked_at IS NULL').bind(now, email)]);
+  await revokeAllFor(env.DB, email, now);          // their phones' keys and unlocks die too
   return [200, { ok: true }];
 }

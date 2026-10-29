@@ -5,6 +5,7 @@ import { PAGE } from './ui.js';
 import * as ST from './stats.js';
 import * as PL from './play.js';
 import * as AD from './admins.js';
+import * as DV from './device.js';
 import { sendMail, resetMail, randomToken, sha256, rateOk } from './mail.js';
 
 const SEC = { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'Referrer-Policy': 'no-referrer',
@@ -29,9 +30,25 @@ export async function handle(req, env, opts = {}) {
   if (m === 'GET' && path === '/admin.js') return new Response(PAGE.js, { headers: { ...SEC, 'Content-Type': 'text/javascript; charset=utf-8' } });
   if (m === 'GET' && path === '/admin.css') return new Response(PAGE.css, { headers: { ...SEC, 'Content-Type': 'text/css; charset=utf-8' } });
   if (m === 'GET' && path === '/api/me') return json({ email: who.email, role, invites: AD.invitesOn(env) });
+  if (m === 'POST' && path.startsWith('/api/device/')) {          // step 2: phone enrol / challenge / verify (no unlock needed for these)
+    if (req.headers.get('X-Admin') !== '1' || req.headers.get('Origin') !== url.origin) return json({ error: 'csrf' }, 403);
+    let b = {}; try { b = await req.json(); } catch {}
+    const [st, r, cookie] = path === '/api/device/enrol' ? await DV.enrol(env.DB, who, b) : path === '/api/device/challenge' ? await DV.challenge(env.DB, who.email)
+      : path === '/api/device/verify' ? await DV.verify(env.DB, who.email, b) : [404, { error: 'not_found' }];
+    if (st === 200 && path !== '/api/device/challenge') await SS.audit(env.DB, actor, path.slice(12) === 'enrol' ? 'device-enrol' : 'device-unlock', 'admin', String(r.key_id || b.key_id || '').slice(0, 64), who.email);
+    const res = json(r, st); if (cookie) res.headers.append('Set-Cookie', cookie); return res;
+  }
+  if (DV.fromApp(req) && path.startsWith('/api/') && !(await DV.unlocked(env.DB, req, who.email))) return json({ error: 'locked' }, 403);          // app requests need a fingerprint unlock; desktop doesn't
   if (path.startsWith('/api/admins')) {          // owner only: invite, revoke, remove
     if (role !== 'owner') return json({ error: 'owner_only' }, 403);
-    if (m === 'GET' && path === '/api/admins') return json({ ...(await AD.list(env.DB)), invites_on: AD.invitesOn(env) });
+    if (m === 'GET' && path === '/api/admins') return json({ ...(await AD.list(env.DB)), devices: await DV.list(env.DB), invites_on: AD.invitesOn(env) });
+    if (m === 'POST' && path === '/api/admins/device-revoke') {          // works even when invites are off
+      if (req.headers.get('X-Admin') !== '1' || req.headers.get('Origin') !== url.origin) return json({ error: 'csrf' }, 403);
+      let b = {}; try { b = await req.json(); } catch {}
+      const [st, r] = await DV.revoke(env.DB, b.id);
+      if (st === 200) await SS.audit(env.DB, actor, 'device-revoke', 'admin', String(b.id).slice(0, 64), null);
+      return json(r, st);
+    }
     if (m !== 'POST') return json({ error: 'not_found' }, 404);
     if (req.headers.get('X-Admin') !== '1' || req.headers.get('Origin') !== url.origin) return json({ error: 'csrf' }, 403);
     if (!AD.invitesOn(env)) return json({ error: 'invites_off' }, 503);

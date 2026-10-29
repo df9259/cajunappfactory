@@ -37,6 +37,6 @@ export async function verifyAccess(req, env, { fetcher = fetch, now = Date.now()
     const auds = Array.isArray(p.aud) ? p.aud : [p.aud]; if (!auds.includes(aud)) return null;
     const email = String(p.email || '').toLowerCase();
     if (!email) return null;
-    return { email };          // 10-29: who may use the admin (owner or an accepted invite) is decided in index.js
+    return { email, iat: typeof p.iat === "number" ? p.iat : 0 };          // 10-29: iat = Access login time (device enrol). Who may use the admin (owner or an accepted invite) is decided in index.js
   } catch { return null; }
 }
