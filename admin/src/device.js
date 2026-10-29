@@ -40,11 +40,11 @@ export async function challenge(db, email, now = Date.now()) {
   return [200, { nonce }];
 }
 /** Single-use nonce, signature by one of this admin's live keys -> caf_unlock cookie. */
-export async function verify(db, email, b, now = Date.now()) {
+export async function verify(db, email, b, now = Date.now(), extra = []) {          // extra: statements written with the unlock (the app's audit row)
   const nonce = String(b.nonce || ''), key_id = String(b.key_id || '');
-  const n = await db.prepare('DELETE FROM caf_nonces WHERE nonce=? AND email=? RETURNING expires_at').bind(nonce, email).first();
+  const [n, k] = await Promise.all([db.prepare('DELETE FROM caf_nonces WHERE nonce=? AND email=? RETURNING expires_at').bind(nonce, email).first(),          // 10-29: in parallel; the nonce is still burnt first-use
+    db.prepare('SELECT public_key FROM caf_admin_keys WHERE id=? AND email=? AND revoked_at IS NULL').bind(key_id, email).first()]);
   if (!n || n.expires_at < now) return [403, { error: 'bad_nonce' }];
-  const k = await db.prepare('SELECT public_key FROM caf_admin_keys WHERE id=? AND email=? AND revoked_at IS NULL').bind(key_id, email).first();
   if (!k) return [403, { error: 'no_key' }];
   let ok = false;
   try { ok = await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, await importKey(k.public_key), derToRaw(ub(String(b.signature || ''))), new TextEncoder().encode(nonce)); } catch {}
@@ -52,7 +52,7 @@ export async function verify(db, email, b, now = Date.now()) {
   const tok = randomToken(32);
   await db.batch([db.prepare('INSERT INTO caf_unlocks VALUES (?,?,?,?,?)').bind(await sha256(tok), email, key_id, now, now),
     db.prepare('UPDATE caf_admin_keys SET last_used_at=? WHERE id=?').bind(now, key_id),
-    db.prepare('DELETE FROM caf_unlocks WHERE created_at<?').bind(now - MAX)]);
+    db.prepare('DELETE FROM caf_unlocks WHERE created_at<?').bind(now - MAX), ...extra]);
   return [200, { ok: true }, setCookie(tok, MAX / 1000)];
 }
 /** True if the cookie is a live unlock for this admin from a non-revoked key; slides the idle timer. */

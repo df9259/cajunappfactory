@@ -82,3 +82,17 @@ test('app POST actions reach the same handlers (toggle) without Access or CSRF h
   const r = await call(E, '/api/app/apps/stopscope/toggle', { session, unlock, body: { kind: 'web', id: 'w1', what: 'pro_comp', on: true } });
   assert.equal(r.status, 200, await r.clone().text());
 });
+
+test('10-29 0.2.2: verify returns the role and writes the unlock audit row in the same batch', async () => {
+  const E = mk();
+  const { session } = await (await call(E, '/api/app/login/google', { body: { id_token: await gtok() } })).json();
+  const p = phone();
+  const { key_id } = await (await call(E, '/api/app/enrol', { session, body: { device_id: 'pixel-8-pro', public_key: p.pub, label: 'Pixel 8 Pro' } })).json();
+  const { nonce } = await (await call(E, '/api/app/challenge', { session, body: {} })).json();
+  const v = await (await call(E, '/api/app/verify', { session, body: { nonce, key_id, signature: p.sig(nonce) } })).json();
+  assert.equal(v.role, 'owner'); assert.ok(v.unlock); assert.equal(v.ok, true);          // 0.2.1 only reads unlock: still there
+  assert.equal(E.env.DB._sql.prepare("SELECT COUNT(*) n FROM admin_audit WHERE action='device-unlock' AND target_id=?").get(key_id).n, 1);
+  const again = await call(E, '/api/app/verify', { session, body: { nonce, key_id, signature: p.sig(nonce) } });
+  assert.equal(again.status, 403);          // nonce still single use
+  assert.equal(E.env.DB._sql.prepare("SELECT COUNT(*) n FROM admin_audit WHERE action='device-unlock'").get().n, 1);          // no audit on failure
+});

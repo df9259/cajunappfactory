@@ -92,8 +92,10 @@ export async function handleApp(req, env, opts, inner) {
   const actor = who.email;
   if (m === 'POST' && sub === 'logout') { await db.prepare('UPDATE caf_app_sessions SET revoked_at=? WHERE token_hash=?').bind(now, who.hash).run(); return json({ ok: true }); }
   if (m === 'POST' && ['enrol', 'challenge', 'verify'].includes(sub)) {          // step 2 flow; enrol only within 15 min of this app sign-in
-    const [st, r, cookie] = sub === 'enrol' ? await DV.enrol(db, who, b, now) : sub === 'challenge' ? await DV.challenge(db, who.email, now) : await DV.verify(db, who.email, b, now);
-    if (st === 200 && sub !== 'challenge') await SS.audit(db, actor, sub === 'enrol' ? 'device-enrol' : 'device-unlock', 'admin', String(r.key_id || b.key_id || '').slice(0, 64), who.email);
+    const aud = db.prepare('INSERT INTO admin_audit (admin_user_id,action,target_kind,target_id,target_email,created_at) VALUES (?,?,?,?,?,?)').bind(actor, 'device-unlock', 'admin', String(b.key_id || '').slice(0, 64), who.email, now);
+    const [st, r, cookie] = sub === 'enrol' ? await DV.enrol(db, who, b, now) : sub === 'challenge' ? await DV.challenge(db, who.email, now) : await DV.verify(db, who.email, b, now, [aud]);          // 10-29: unlock audit in the same batch
+    if (sub === 'verify' && st === 200) r.role = who.role;          // 0.2.2 skips GET me; older apps ignore it
+    if (st === 200 && sub === 'enrol') await SS.audit(db, actor, 'device-enrol', 'admin', String(r.key_id || '').slice(0, 64), who.email);
     if (cookie) r.unlock = /^caf_unlock=([\w-]+)/.exec(cookie)[1];
     return json(r, st);
   }
