@@ -1,7 +1,13 @@
-# Old MyStops URLs: permanent redirects to the StopScope pages.
-/mystops /stopscope/ 301
-/mystops/ /stopscope/ 301
-/mystops/index.html /stopscope/ 301
-/mystops/privacy /stopscope/privacy/ 301
-/mystops/privacy/ /stopscope/privacy/ 301
-/mystops/privacy/index.html /stopscope/privacy/ 301
+# 10-29 (Dominic): StopScope lives on stopscope.com. Old StopScope and MyStops URLs go straight there (301, no chains).
+/stopscope https://stopscope.com/ 301
+/stopscope/ https://stopscope.com/ 301
+/stopscope/index.html https://stopscope.com/ 301
+/stopscope/privacy https://stopscope.com/privacy/ 301
+/stopscope/privacy/ https://stopscope.com/privacy/ 301
+/stopscope/privacy/index.html https://stopscope.com/privacy/ 301
+/mystops https://stopscope.com/ 301
+/mystops/ https://stopscope.com/ 301
+/mystops/index.html https://stopscope.com/ 301
+/mystops/privacy https://stopscope.com/privacy/ 301
+/mystops/privacy/ https://stopscope.com/privacy/ 301
+/mystops/privacy/index.html https://stopscope.com/privacy/ 301
