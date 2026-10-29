@@ -40,8 +40,9 @@ export async function listUsers(db, { q = '', page = 1, type = '' } = {}) {
   page = Math.max(1, Math.min(10000, Math.floor(Number(page)) || 1));
   const like = likeEsc(q.toLowerCase());
   const b = [aud, aud, pro, q, like, like, like];
-  const total = (await db.prepare(`SELECT COUNT(*) AS n FROM (${ROWS})`).bind(...b).first())?.n || 0;
-  const rs = (await db.prepare(`${ROWS} ORDER BY COALESCE(seen, 0) DESC, email LIMIT ? OFFSET ?`).bind(...b, PER_PAGE, (page - 1) * PER_PAGE).all()).results || [];
+  const [c, all] = await Promise.all([db.prepare(`SELECT COUNT(*) AS n FROM (${ROWS})`).bind(...b).first(),
+    db.prepare(`${ROWS} ORDER BY COALESCE(seen, 0) DESC, email LIMIT ? OFFSET ?`).bind(...b, PER_PAGE, (page - 1) * PER_PAGE).all()]);
+  const total = c?.n || 0, rs = all.results || [];
   const users = rs.map((r) => ({ kind: r.kind, id: r.id, email: r.email, name: r.name || null, method: r.method, created_at: r.created_at,
     last_sign_in_at: r.last || null, last_app_open: r.kind === 'app' ? (r.last_seen_at || null) : null, sign_ins: r.sign_in_count || 0,
     type: r.aud, driver: !!r.driver_id, deleted: !!r.deleted_at, company: r.company || null, role: r.role || null,
@@ -104,25 +105,27 @@ const ownedCompany = (db, webId) => webId ? db.prepare("SELECT c.id, c.name, c.f
 const APIS = ['geocode', 'routes', 'optimize', 'matrix', 'points', 'proof'];
 export async function userDetail(db, kind, id, now = Date.now()) {
   const t = await target(db, kind, id); if (!t) return null;
-  const app = t.appId ? await db.prepare('SELECT id, name, created_at, last_sign_in_at, last_seen_at, sign_in_count, COALESCE(pro_comp,0) pc, google_sub IS NOT NULL g, app_version av, app_version_code avc FROM app_users WHERE id=?').bind(t.appId).first() : null;
-  const web = t.webId ? await db.prepare('SELECT id, name, created_at, sign_in_count, email_verified_at, COALESCE(pro_comp,0) pc, google_sub IS NOT NULL g, pw_hash IS NOT NULL p FROM users WHERE id=?').bind(t.webId).first() : null;
-  const co = await ownedCompany(db, t.webId);
-  const member = !co && t.webId ? await db.prepare('SELECT c.name, m.role FROM memberships m JOIN companies c ON c.id=m.company_id WHERE m.user_id=?').bind(t.webId).first() : null;
-  const drv = await db.prepare('SELECT d.id, c.name FROM drivers d JOIN companies c ON c.id=d.company_id WHERE d.email=? COLLATE NOCASE AND d.account_deleted_at IS NULL').bind(t.email).first();
   const day = (x) => new Date(x).toISOString().slice(0, 10), wk = day(now - 6 * 86400e3);
+  const use = (k, uid) => uid ? db.prepare('SELECT api, SUM(count) c FROM user_usage WHERE kind=? AND user_id=? AND day>=? GROUP BY api').bind(k, uid, wk).all() : null;
+  // 10-29: independent reads in parallel (were ~12 sequential round trips)
+  const [app, web, co, member, drv, ua, uw, au] = await Promise.all([
+    t.appId ? db.prepare('SELECT id, name, created_at, last_sign_in_at, last_seen_at, sign_in_count, COALESCE(pro_comp,0) pc, google_sub IS NOT NULL g, app_version av, app_version_code avc FROM app_users WHERE id=?').bind(t.appId).first() : null,
+    t.webId ? db.prepare('SELECT id, name, created_at, sign_in_count, email_verified_at, COALESCE(pro_comp,0) pc, google_sub IS NOT NULL g, pw_hash IS NOT NULL p FROM users WHERE id=?').bind(t.webId).first() : null,
+    ownedCompany(db, t.webId),
+    t.webId ? db.prepare('SELECT c.name, m.role FROM memberships m JOIN companies c ON c.id=m.company_id WHERE m.user_id=?').bind(t.webId).first() : null,
+    db.prepare('SELECT d.id, c.name FROM drivers d JOIN companies c ON c.id=d.company_id WHERE d.email=? COLLATE NOCASE AND d.account_deleted_at IS NULL').bind(t.email).first(),
+    use('app', t.appId), use('web', t.webId),
+    db.prepare('SELECT action, created_at FROM admin_audit WHERE target_email=? COLLATE NOCASE ORDER BY created_at DESC, id DESC LIMIT 20').bind(t.email).all()]);
   const usage = {}; for (const a of APIS) usage[a] = 0;
-  for (const [k, uid] of [['app', t.appId], ['web', t.webId]]) if (uid) {
-    const rs = (await db.prepare('SELECT api, SUM(count) c FROM user_usage WHERE kind=? AND user_id=? AND day>=? GROUP BY api').bind(k, uid, wk).all()).results || [];
-    for (const r of rs) if (r.api in usage) usage[r.api] += r.c;
-  }
+  for (const x of [ua, uw]) if (x) for (const r of x.results || []) if (r.api in usage) usage[r.api] += r.c;
   let routes = null, stops_done = null;
   const cid = co ? co.id : null;
   if (cid) {
-    routes = (await db.prepare('SELECT COUNT(*) n FROM routes WHERE company_id=?').bind(cid).first())?.n || 0;
-    stops_done = (await db.prepare("SELECT COUNT(*) n FROM route_stops WHERE company_id=? AND status='done'").bind(cid).first())?.n || 0;
+    const [r1, r2] = await Promise.all([db.prepare('SELECT COUNT(*) n FROM routes WHERE company_id=?').bind(cid).first(), db.prepare("SELECT COUNT(*) n FROM route_stops WHERE company_id=? AND status='done'").bind(cid).first()]);
+    routes = r1?.n || 0; stops_done = r2?.n || 0;
   } else if (drv) {
-    routes = (await db.prepare('SELECT COUNT(*) n FROM routes WHERE driver_id=?').bind(drv.id).first())?.n || 0;
-    stops_done = (await db.prepare("SELECT COUNT(*) n FROM route_stops s JOIN routes r ON r.id=s.route_id WHERE r.driver_id=? AND s.status='done'").bind(drv.id).first())?.n || 0;
+    const [r1, r2] = await Promise.all([db.prepare('SELECT COUNT(*) n FROM routes WHERE driver_id=?').bind(drv.id).first(), db.prepare("SELECT COUNT(*) n FROM route_stops s JOIN routes r ON r.id=s.route_id WHERE r.driver_id=? AND s.status='done'").bind(drv.id).first()]);
+    routes = r1?.n || 0; stops_done = r2?.n || 0;
   }
   const methods = new Set(); for (const x of [app, web]) if (x) { if (x.g) methods.add('Google'); if (x.p) methods.add('Password'); }
   if (app && !app.g) methods.add('Password');
@@ -135,7 +138,7 @@ export async function userDetail(db, kind, id, now = Date.now()) {
     pro_comp: !!((app && app.pc) || (web && web.pc)), pro_play: null,
     dispatch_license: co ? !!co.free_license : null, license_toggle: !!co,
     routes, stops_done, usage_7d: usage,
-    audit: (await db.prepare('SELECT action, created_at FROM admin_audit WHERE target_email=? COLLATE NOCASE ORDER BY created_at DESC, id DESC LIMIT 20').bind(t.email).all()).results || [] };
+    audit: au.results || [] };
 }
 
 export async function audit(db, adminId, action, kind, id, email, now = Date.now()) {

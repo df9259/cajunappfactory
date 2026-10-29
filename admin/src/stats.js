@@ -178,8 +178,8 @@ export const COMING_SOON = {
   crash_free: 'Coming soon (Play reporting)', anr: 'Coming soon (Play reporting)', rating: 'Coming soon (Play reporting)',
   installs: 'Coming soon (Play reporting)', version_spread: 'Coming soon (Play reporting)' };
 
-export async function all_(db, now = Date.now()) {
-  return { engagement: await engagement(db, now), cohorts: await cohorts(db, now), activation: await activation(db, now),
-    signups_weekly: await signupsWeekly(db, now), gone_quiet: await goneQuiet(db, now), api_cost: await apiCost(db, now),
-    dispatch: await dispatchBiz(db, now), routes: await routesOps(db), features: await features(db, now), pro: await proSubs(db, now), coming_soon: COMING_SOON };
+export async function all_(db, now = Date.now()) {          // 10-29: sections run in parallel (were 10 sequential awaits)
+  const [engagement_, cohorts_, activation_, signups_weekly, gone_quiet, api_cost, dispatch, routes, features_, pro] = await Promise.all([engagement(db, now), cohorts(db, now), activation(db, now),
+    signupsWeekly(db, now), goneQuiet(db, now), apiCost(db, now), dispatchBiz(db, now), routesOps(db), features(db, now), proSubs(db, now)]);
+  return { engagement: engagement_, cohorts: cohorts_, activation: activation_, signups_weekly, gone_quiet, api_cost, dispatch, routes, features: features_, pro, coming_soon: COMING_SOON };
 }

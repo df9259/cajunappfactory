@@ -40,13 +40,13 @@ async function newSession(db, email, method, now) {
   await db.prepare('INSERT INTO caf_app_sessions (token_hash,email,method,created_at,last_at) VALUES (?,?,?,?,?)').bind(await sha256(tok), email, method, now, now).run();
   return tok;
 }
-async function session(db, req, now) {
+async function session(db, req, now, unlockedFor) {
   const m = /^Bearer ([\w-]{20,100})$/.exec(req.headers.get('Authorization') || ''); if (!m) return null;
   const s = await db.prepare('UPDATE caf_app_sessions SET last_at=? WHERE token_hash=? AND revoked_at IS NULL AND created_at>? AND last_at>? RETURNING email, created_at')
     .bind(now, await sha256(m[1]), now - SESSION_MAX, now - SESSION_IDLE).first();
   if (!s) return null;
-  const role = await roleOf(db, s.email);          // removed admins lose the app at once
-  return role ? { email: s.email, iat: Math.floor(s.created_at / 1000), role, hash: await sha256(m[1]) } : null;
+  const [role, unl] = await Promise.all([roleOf(db, s.email), unlockedFor ? unlockedFor(s.email) : false]);          // removed admins lose the app at once; 10-29: unlock check in parallel
+  return role ? { email: s.email, iat: Math.floor(s.created_at / 1000), role, hash: await sha256(m[1]), unl } : null;
 }
 const codeMail = (code) => ({ from: { email: 'no-reply@cajunappfactory.com', name: 'Cajun App Factory' }, subject: 'Your Cajun App Factory Admin sign-in code',
   text: `Your sign-in code for the Cajun App Factory Admin app is:\n\n${code}\n\nIt expires in 10 minutes. If you didn’t ask for it, ignore this email.\n\n— Cajun App Factory`,
@@ -87,7 +87,7 @@ export async function handleApp(req, env, opts, inner) {
     await SS.audit(db, email, 'app-sign-in', 'admin', 'code', email);
     return json({ session: await newSession(db, email, 'code', now), email });
   }
-  const who = await session(db, req, now);
+  const who = await session(db, req, now, (e) => DV.unlocked(db, req, e, now));
   if (!who) return json({ error: 'signed_out' }, 401);
   const actor = who.email;
   if (m === 'POST' && sub === 'logout') { await db.prepare('UPDATE caf_app_sessions SET revoked_at=? WHERE token_hash=?').bind(now, who.hash).run(); return json({ ok: true }); }
@@ -97,7 +97,7 @@ export async function handleApp(req, env, opts, inner) {
     if (cookie) r.unlock = /^caf_unlock=([\w-]+)/.exec(cookie)[1];
     return json(r, st);
   }
-  if (!(await DV.unlocked(db, req, who.email, now))) return json({ error: 'locked' }, 403);
+  if (!who.unl) return json({ error: 'locked' }, 403);
   if (!(sub === 'me' || sub === 'admins' || sub.startsWith('admins/') || sub.startsWith('apps/stopscope/'))) return json({ error: 'not_found' }, 404);
   // Data: the same handlers as the web admin, with the app session as the identity (no Access cookie, no CSRF: Bearer token).
   const headers = new Headers({ 'X-Admin': '1', Origin: url.origin }); if (m === 'POST') headers.set('Content-Type', 'application/json');
