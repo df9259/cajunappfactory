@@ -1,5 +1,5 @@
 // Cloudflare Access gate. FAIL CLOSED: no team/AUD vars, no JWT, bad signature, wrong aud/iss, expired, or any email
-// other than ALLOWED_EMAIL -> null (caller returns 403).
+// missing -> null (caller returns 403). The email must also be the owner or an active caf_admins row (index.js).
 export const ALLOWED_EMAIL = 'df9259@gmail.com';
 const b64u = (s) => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (s.length % 4)) % 4)), (c) => c.charCodeAt(0));
 const dec = (s) => JSON.parse(new TextDecoder().decode(b64u(s)));
@@ -36,7 +36,7 @@ export async function verifyAccess(req, env, { fetcher = fetch, now = Date.now()
     if (p.iss !== `https://${team}`) return null;
     const auds = Array.isArray(p.aud) ? p.aud : [p.aud]; if (!auds.includes(aud)) return null;
     const email = String(p.email || '').toLowerCase();
-    if (email !== ALLOWED_EMAIL) return null;
-    return { email };
+    if (!email) return null;
+    return { email };          // 10-29: who may use the admin (owner or an accepted invite) is decided in index.js
   } catch { return null; }
 }

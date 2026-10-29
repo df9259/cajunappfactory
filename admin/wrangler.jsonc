@@ -7,7 +7,12 @@
   "workers_dev": false,
   "preview_urls": false,
   "routes": [{ "pattern": "admin.cajunappfactory.com", "custom_domain": true }],
-  "vars": { "ACCESS_TEAM_DOMAIN": "curly-dream-ead0.cloudflareaccess.com", "ACCESS_AUD": "7626b994ad4fb95598263fb0d3301e8a4a177eea6d751751a127bb9a767ec4a6", "ADMIN_USER_ID": "018f22ea-3340-4f1d-a7b8-b5324d7fe41a" },
+  "vars": { "ACCESS_TEAM_DOMAIN": "curly-dream-ead0.cloudflareaccess.com", "ACCESS_AUD": "7626b994ad4fb95598263fb0d3301e8a4a177eea6d751751a127bb9a767ec4a6", "CF_ACCOUNT_ID": "29506ec0c1b842444a334d716e1d9cc4",
+    "ACCESS_APP_ID": "78997d10-f672-4dc8-9245-fa2e6c831042",
+    "ACCESS_POLICY_ID": "e77b674c-86c8-4b1f-bd44-57024fbc931c",
+    "ADMIN_USER_ID": "018f22ea-3340-4f1d-a7b8-b5324d7fe41a" },
   "triggers": { "crons": ["0 11 * * *"] },
-  "d1_databases": [{ "binding": "DB", "database_name": "stopscope-dispatch", "database_id": "6b232409-6a72-41e7-9e93-e820b4b1179e" }]
+  "d1_databases": [{ "binding": "DB", "database_name": "stopscope-dispatch", "database_id": "6b232409-6a72-41e7-9e93-e820b4b1179e" }],
+  // 10-29: invites + reset emails (Cloudflare Email Service, included with Workers Paid). CF_ACCESS_TOKEN is a secret.
+  "send_email": [{ "name": "EMAIL", "allowed_sender_addresses": ["no-reply@cajunappfactory.com", "no-reply@stopscope.com"] }]
 }

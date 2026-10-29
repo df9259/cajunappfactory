@@ -31,10 +31,10 @@ const tile=(label,v,s,na)=>$('div',{cls:'card tile'+(na?' na':'')},$('div',{cls:
 const soon=(label,s)=>tile(label,'Coming soon',s,true);
 const table=(cols,rows)=>$('table',{},$('tr',{},cols.map(c=>$('th',{},c))),rows.map(r=>$('tr',{},r.map(c=>$('td',{},c)))));
 const crumb=(t)=>{document.getElementById('crumb').textContent=t};
-api('/api/me').then(j=>{document.getElementById('who').textContent=j.email+' · via Cloudflare Access'}).catch(()=>{});
+api('/api/me').then(j=>{const w=document.getElementById('who');w.textContent=j.email+' · via Cloudflare Access';if(j.role==='owner')w.prepend($('a',{href:'/admins',on:{click:(e)=>{e.preventDefault();go('/admins')}}},'Admins'),' · ')}).catch(()=>{});
 function go(p){history.pushState({},'',p);route()} window.onpopstate=route;
 async function route(){const p=location.pathname;put(M,$('p',{cls:'muted'},'Loading…'));
- try{if(p==='/apps/stopscope')await overview();else if(p==='/apps/stopscope/users')await users();else await home()}catch(e){put(M,$('p',{cls:'err'},'Could not load: '+e.message))}}
+ try{if(p==='/apps/stopscope')await overview();else if(p==='/apps/stopscope/users')await users();else if(p==='/admins')await admins();else await home()}catch(e){put(M,$('p',{cls:'err'},'Could not load: '+e.message))}}
 async function home(){crumb('Apps');const o=await api('/api/apps/stopscope/overview');
  put(M,$('h1',{},'Your apps'),$('div',{cls:'sub'},'Tap an app for stats and users'),
   $('div',{cls:'card appcard',on:{click:()=>go('/apps/stopscope')}},$('div',{style:'display:flex;gap:12px;align-items:center'},$('div',{cls:'ico'},'S'),$('div',{},$('div',{style:'font-size:17px;font-weight:700'},'StopScope'),$('div',{cls:'muted'},'Android · stopscope.com'))),
@@ -93,8 +93,18 @@ async function detail(box,u){put(box,$('p',{cls:'muted'},'Loading…'));let d;tr
  put(box,$('div',{style:'font-size:18px;font-weight:700'},d.name||d.email),$('div',{cls:'muted'},d.email+(d.sign_in?' · '+d.sign_in:'')),
   table(['',''],[['Accounts',[d.app_account&&'App',d.website_account&&'Website'].filter(Boolean).join(' + ')],['Joined',dt(d.joined)],['Sign-ins',n(d.sign_ins)],['Last app open',dt(d.last_app_open)],['App version',d.app_version||'—'],['Company',d.company?d.company+(d.role?' ('+d.role+')':''):'—'],['Routes / stops done',n(d.routes)+' / '+n(d.stops_done)],['API use 7d',us]]),
   tog('Free Pro','pro_comp',d.pro_comp,true,''),tog('Dispatch license','dispatch_license',!!d.dispatch_license,d.license_toggle,'Only for someone who owns a Dispatch company'),
-  $('div',{cls:'tg'},d.app_account?act('Show tutorial again','tutorial'):null,' ',act('Sign out all devices','signout')),
+  $('div',{cls:'tg'},d.app_account?act('Show tutorial again','tutorial'):null,' ',act('Sign out all devices','signout'),' ',d.sign_in&&d.sign_in.includes('Password')&&d.website_account?act('Send password reset email','reset-email'):null),
   $('b',{},'Audit log'),d.audit.length?d.audit.map(x=>$('div',{cls:'muted',style:'font-size:12px'},x.action+' · '+dt(x.created_at))):$('div',{cls:'muted',style:'font-size:12px'},'No admin actions yet'),
   $('div',{cls:'muted',style:'font-size:11px;margin-top:10px'},'Every toggle is written to admin_audit.'))}
+const post=(p,b)=>api(p,{method:'POST',headers:{'Content-Type':'application/json','X-Admin':'1'},body:JSON.stringify(b)});
+async function admins(){crumb('Admins');const j=await api('/api/admins');
+ const q=$('input',{type:'email',placeholder:'name@example.com',maxlength:'254',required:'required'}),msg=$('p',{cls:'muted'},j.invites_on?'They get a link that works once and expires in 7 days.':'Invites are off until the Access API token and email sending are set up.');
+ const f=$('form',{style:'display:flex;gap:8px',on:{submit:async(e)=>{e.preventDefault();try{await post('/api/admins/invite',{email:q.value});admins()}catch(x){msg.textContent='Failed: '+x.message}}}},q,$('button',{cls:'btn'},'Send invite'));
+ if(!j.invites_on)[...f.elements].forEach(x=>x.disabled=true);
+ const btn=(l,fn)=>$('button',{cls:'btn o',on:{click:async(e)=>{if(!confirm(l+'?'))return;e.target.disabled=true;try{await fn();admins()}catch(x){alert('Failed: '+x.message);e.target.disabled=false}}}},l);
+ put(M,$('h1',{},'Admins'),$('div',{cls:'sub'},'Who can open Cajun App Factory Admin. Admins can do everything except manage admins.'),
+  $('div',{cls:'card'},$('b',{},'Invite by email'),msg,f),
+  $('div',{cls:'card'},$('b',{},'Pending invites'),j.invites.length?table(['Email','Sent','',''],j.invites.map(i=>[i.email,dt(i.created_at),i.expired?'Expired':'Expires '+dt(i.expires_at),j.invites_on?btn('Revoke',()=>post('/api/admins/revoke',{id:i.id})):''])):$('p',{cls:'muted'},'None')),
+  $('div',{cls:'card'},$('b',{},'Admins'),table(['Email','Role',''],[[j.owner,'Owner','']].concat(j.admins.map(a=>[a.email,'Admin',j.invites_on?btn('Remove',()=>post('/api/admins/remove',{email:a.email})):''])))))}
 route();`;
 export const PAGE = { html, css, js };
