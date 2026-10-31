@@ -35,13 +35,9 @@ Subhead: StopScope turns a label, a photo, a typed list, or a spreadsheet into t
 
 - `index.html` is the company page.
 - `privacy/index.html` is the company policy. It covers the website only and links to the app policy.
-- `stopscope/index.html` is the app page.
-- `stopscope/privacy/index.html` is the StopScope policy. Play uses this URL.
-- `mystops/index.html` and `mystops/privacy/index.html` are redirects. Do not put product copy back there.
+- `/stopscope/*` and `/mystops/*` 301 via `_redirects`. Those paths have no pages in this repo.
 - `styles.css` is the shared sheet.
 - `wrangler.toml` publishes the repo root as static assets. Build command stays empty. Deploy command stays `npx wrangler deploy`.
-
-Screenshot and demo files still live under `assets/mystops/`. Do not rename that folder unless the HTML references move with it.
 
 ## Privacy page
 
