@@ -3,7 +3,7 @@
 // Then step 2's enrol / challenge / verify; every data call also needs the fingerprint unlock (X-Unlock). Email must be an admin.
 import { roleOf } from './admins.js';
 import * as DV from './device.js';
-import { randomToken, sha256, rateOk, sendMail } from './mail.js';
+import { randomToken, sha256, rateOk, sendMail, timingSafeEqual } from './mail.js';
 import * as SS from './stopscope.js';
 export const SESSION_MAX = 30 * 86400e3, SESSION_IDLE = 7 * 86400e3, CODE_TTL = 10 * 60e3;
 const GOOGLE_CERTS = 'https://www.googleapis.com/oauth2/v3/certs';
@@ -81,7 +81,7 @@ export async function handleApp(req, env, opts, inner) {
   if (m === 'POST' && sub === 'login/code') {
     const email = String(b.email || '').trim().toLowerCase(), code = String(b.code || '');
     const r = await db.prepare('UPDATE caf_app_codes SET tries=tries+1 WHERE email=? AND expires_at>? AND tries<5 RETURNING code_hash').bind(email, now).first();
-    if (!r || !/^\d{6}$/.test(code) || r.code_hash !== (await sha256(email + ':' + code))) return json({ error: 'bad_code' }, 401);
+    if (!r || !/^\d{6}$/.test(code) || !timingSafeEqual(r.code_hash, await sha256(email + ':' + code))) return json({ error: 'bad_code' }, 401);
     await db.prepare('DELETE FROM caf_app_codes WHERE email=?').bind(email).run();          // single use
     if (!(await roleOf(db, email))) return json({ error: 'not_admin' }, 403);
     await SS.audit(db, email, 'app-sign-in', 'admin', 'code', email);

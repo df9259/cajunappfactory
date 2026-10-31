@@ -29,3 +29,10 @@ export const resetMail = (link) => ({ from: { email: 'no-reply@stopscope.com', n
 export const inviteMail = (link) => ({ from: { email: 'no-reply@cajunappfactory.com', name: 'Cajun App Factory' }, subject: 'You’re invited to Cajun App Factory Admin',
   text: `Dominic Fontenot invited you to help run Cajun App Factory apps.\n\nAccept the invite:\n${link}\n\nSign in with this email address (Google or an email code). Then install the Cajun App Factory Admin app and set up your fingerprint.\n\nThis link works once and expires in 7 days. If you weren’t expecting it, ignore this email and nothing happens.\n\n— Cajun App Factory`,
   html: htmlOf('You’re invited to Cajun App Factory Admin', ['Dominic Fontenot invited you to help run Cajun App Factory apps.', 'Sign in with this email address (Google or an email code). Then install the Cajun App Factory Admin app and set up your fingerprint.', 'This link works once and expires in 7 days.'], link, 'Accept invite') });
+/** Constant-time string compare (10-31 audit #7). */
+export function timingSafeEqual(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string') return false;
+  let d = a.length ^ b.length;
+  for (let i = 0; i < Math.max(a.length, b.length); i++) d |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
+  return d === 0;
+}
