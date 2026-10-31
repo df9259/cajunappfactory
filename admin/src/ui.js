@@ -5,7 +5,7 @@ a{color:#F5A623}.top{display:flex;align-items:center;gap:16px;padding:14px 28px;
 .wrap{padding:24px 28px}h1{font-size:22px;margin:0 0 4px}h2{font-size:16px;margin:24px 0 10px}.sub{color:#9aa294;margin-bottom:20px}
 .card{background:#262A24;border:1px solid #343a31;border-radius:12px;padding:16px}.grid{display:grid;gap:14px}
 .tiles{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}.tile .v{font-size:24px;font-weight:700;margin-top:6px}.tile .s{color:#9aa294;font-size:12px}
-.tile.na .v{font-size:14px;color:#9aa294;font-weight:500}.amber{color:#F5A623}
+.tile.na .v{font-size:14px;color:#9aa294;font-weight:500}
 .pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;background:#343a31;color:#cfd4c9}.pill.a{background:#F5A62333;color:#F5A623}.pill.g{background:#4caf5033;color:#7fd483}
 .btn{background:#F5A623;color:#121410;border:0;border-radius:8px;padding:8px 12px;font-weight:600;cursor:pointer}.btn.o{background:transparent;color:#F5A623;border:1px solid #F5A623}
 table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px;border-bottom:1px solid #343a31;vertical-align:top}th{color:#9aa294;font-weight:500;font-size:12px}
@@ -28,7 +28,6 @@ const n=(v)=>v==null?'—':typeof v==='number'?nf.format(v):v, pct=(v)=>v==null?
 const dt=(t)=>t?new Date(t).toLocaleString('en-US',{timeZone:'America/Chicago',dateStyle:'medium',timeStyle:'short'})+' CT':'never';
 const ago=(t)=>{if(!t)return 'never';const d=(Date.now()-t)/864e5;return d<1?Math.round(d*24)+'h ago':Math.round(d)+'d ago'};
 const tile=(label,v,s,na)=>$('div',{cls:'card tile'+(na?' na':'')},$('div',{cls:'muted'},label),$('div',{cls:'v'},v),s?$('div',{cls:'s'},s):null);
-const soon=(label,s)=>tile(label,'Coming soon',s,true);
 const table=(cols,rows)=>$('table',{},$('tr',{},cols.map(c=>$('th',{},c))),rows.map(r=>$('tr',{},r.map(c=>$('td',{},c)))));
 const crumb=(t)=>{document.getElementById('crumb').textContent=t};
 api('/api/me').then(j=>{const w=document.getElementById('who');w.textContent=j.email+' · via Cloudflare Access';if(j.role==='owner')w.prepend($('a',{href:'/admins',on:{click:(e)=>{e.preventDefault();go('/admins')}}},'Admins'),' · ')}).catch(()=>{});
@@ -40,7 +39,7 @@ async function home(){crumb('Apps');const o=await api('/api/apps/stopscope/overv
   $('div',{cls:'card appcard',on:{click:()=>go('/apps/stopscope')}},$('div',{style:'display:flex;gap:12px;align-items:center'},$('div',{cls:'ico'},'S'),$('div',{},$('div',{style:'font-size:17px;font-weight:700'},'StopScope'),$('div',{cls:'muted'},'Android · stopscope.com'))),
    $('div',{cls:'grid',style:'grid-template-columns:1fr 1fr 1fr;margin-top:14px'},[['Users',n(o.app_users+o.website_users)],['Active 7d',n(o.active_7d)],['Rating','Not connected yet']].map(([a,b])=>$('div',{},$('div',{cls:'muted'},a),$('b',{style:'font-size:'+(b.length>8?'12':'20')+'px'},b))))))}
 async function overview(){crumb('Apps › StopScope');const[o,s,pl]=await Promise.all([api('/api/apps/stopscope/overview'),api('/api/apps/stopscope/stats'),api('/api/apps/stopscope/play').catch(()=>({}))]);
- const e=s.engagement,a=s.activation,r=s.routes,d=s.dispatch,c=s.api_cost,cs=s.coming_soon;const mx=Math.max(1,...o.signups.map(x=>x.n));
+ const e=s.engagement,a=s.activation,r=s.routes,d=s.dispatch,c=s.api_cost;const mx=Math.max(1,...o.signups.map(x=>x.n));
  put(M,$('div',{style:'display:flex;align-items:center;gap:12px'},$('h1',{},'StopScope'),$('div',{cls:'sp'}),$('button',{cls:'btn',on:{click:()=>go('/apps/stopscope/users')}},'Users')),
   $('div',{cls:'sub'},'Live from D1 stopscope-dispatch · aggregates only'),
   $('h2',{},'Users'),$('div',{cls:'grid tiles'},tile('App users',n(o.app_users),'app_users'),tile('Website users',n(o.website_users),'users'),tile('Personal (solo)',n(o.personal)),tile('Free Pro',n(o.pro_comp),'pro_comp'),tile('Versions in use',(o.versions_in_use||[]).slice(0,3).map(v=>v.version+': '+v.n).join(' · ')||'—','app users by version (from the app, 0.3.31+)'),

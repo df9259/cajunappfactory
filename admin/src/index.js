@@ -1,5 +1,5 @@
 // Cajun App Factory admin (admin.cajunappfactory.com). Every request passes the Cloudflare Access gate first; anything else is 403.
-import { verifyAccess } from './access.js';
+import { verifyAccess, ALLOWED_EMAIL } from './access.js';
 import * as SS from './stopscope.js';
 import { PAGE } from './ui.js';
 import * as ST from './stats.js';
@@ -26,7 +26,7 @@ export async function handle(req, env, opts = {}) {
     const msg = { ok: 'You’re in. Install the Cajun App Factory Admin app and set up your fingerprint, or open admin.cajunappfactory.com.', gone: 'This invite link was already used, revoked or has expired. Ask for a new invite.', wrong_email: 'This invite is for a different email address. Sign out and sign in with the invited email.' }[k];
     return new Response(`<!doctype html><meta name="viewport" content="width=device-width"><title>Cajun App Factory Admin</title><link rel="stylesheet" href="/admin.css"><main class="wrap"><h1>Cajun App Factory Admin</h1><p>${msg}</p>${k === 'ok' ? '<p><a class="btn" href="/">Open Admin</a></p>' : ''}</main>`, { status: st, headers: { ...SEC, 'Content-Type': 'text/html; charset=utf-8' } });
   }
-  const role = env.DB ? await AD.roleOf(env.DB, who.email).catch(() => null) : (who.email === 'df9259@gmail.com' ? 'owner' : null);
+  const role = env.DB ? await AD.roleOf(env.DB, who.email).catch(() => null) : (who.email === ALLOWED_EMAIL ? 'owner' : null);
   if (!role) return forbidden();
   const actor = role === 'owner' ? env.ADMIN_USER_ID : who.email;          // admin_audit.admin_user_id: owner's user id, or the invited admin's email
   if (m === 'GET' && (path === '/' || path === '/apps/stopscope' || path === '/apps/stopscope/users' || path === '/admins')) return new Response(PAGE.html, { headers: { ...SEC, 'Content-Type': 'text/html; charset=utf-8' } });

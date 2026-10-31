@@ -30,7 +30,7 @@ function seed() {
 test('overview stats are real counts', async () => {
   const o = await SS.overview(seed(), NOW);
   assert.equal(o.app_users, 2); assert.equal(o.website_users, 2); assert.equal(o.personal, 1); assert.equal(o.companies, 2); assert.equal(o.drivers, 2);
-  assert.equal(o.signups.length, 30); assert.equal(o.methods.google, 2); assert.equal(o.not_connected.rating, 'Not connected yet');
+  assert.equal(o.signups.length, 30); assert.equal(o.methods.google, 2);
 });
 test('users list: search, filter, paging; never returns hashes', async () => {
   const db = seed();
@@ -87,5 +87,4 @@ test('API cost watch, Dispatch business, route ops; no coordinates leak', async 
   assert.equal(r.invite_accept_pct, 50); assert.equal(r.proof_photo_pct, 50); assert.equal(r.proof_signature_pct, 50); assert.equal(r.proof_storage_mb, 1.5);
   const s = JSON.stringify(await ST.all_(db, NOW));
   assert.ok(!/lat|lng|30\.1|-91/.test(s), 'no locations in stats');
-  assert.match(s, /Coming soon \(Play reporting\)/);
 });

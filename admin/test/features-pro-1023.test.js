@@ -50,5 +50,4 @@ test('pro: Waiting for Play until events; trial starts, conversions, cancels, ac
 test('UI: Coming soon tiles replaced by No data yet / Waiting for Play states', () => {
   assert.ok(!PAGE.js.includes("soon('Feature adoption'") && !PAGE.js.includes("soon('Pro MRR'"));
   assert.ok(PAGE.js.includes('No data yet') && PAGE.js.includes('Waiting for Play') && PAGE.js.includes('Maps vs Waze') && PAGE.js.includes('Stops per route'));
-  assert.ok(!('feature_adoption' in ST.COMING_SOON) && !('pro_mrr' in ST.COMING_SOON));
 });

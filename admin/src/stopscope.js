@@ -46,7 +46,7 @@ export async function listUsers(db, { q = '', page = 1, type = '' } = {}) {
   const users = rs.map((r) => ({ kind: r.kind, id: r.id, email: r.email, name: r.name || null, method: r.method, created_at: r.created_at,
     last_sign_in_at: r.last || null, last_app_open: r.kind === 'app' ? (r.last_seen_at || null) : null, sign_ins: r.sign_in_count || 0,
     type: r.aud, driver: !!r.driver_id, deleted: !!r.deleted_at, company: r.company || null, role: r.role || null,
-    free_license: !!(r.company && r.free_license), pro_comp: !!r.comp, pro_play: null,
+    free_license: !!(r.company && r.free_license), pro_comp: !!r.comp,
     app_version: r.kind === 'app' ? versionLabel(r.av, r.avc) : null,
     last_seen: r.seen || null, accounts: [r.has_app && 'app', r.has_web && 'web'].filter(Boolean) }));
   return { q, type: pro ? 'pro' : aud, page, pages: Math.max(1, Math.ceil(total / PER_PAGE)), total, per_page: PER_PAGE, users };
@@ -54,7 +54,7 @@ export async function listUsers(db, { q = '', page = 1, type = '' } = {}) {
 
 export async function overview(db, now = Date.now()) {
   const wk = now - 7 * 86400e3, since = now - 30 * 86400e3;
-  // 10-24 optimization audit: one D1 batch (one round trip) instead of 16 sequential queries; the same SQL and the same result.
+  // 10-24 optimization audit: one D1 batch (one round trip); the same SQL and the same result.
   const Q = {
     app: ['SELECT COUNT(*) n FROM app_users'], web: ['SELECT COUNT(*) n FROM users'],
     personal: ['SELECT COUNT(*) n FROM app_users a WHERE NOT EXISTS (SELECT 1 FROM drivers d WHERE d.email = a.email COLLATE NOCASE)'],
@@ -62,7 +62,7 @@ export async function overview(db, now = Date.now()) {
     activeWeb: ['SELECT COUNT(DISTINCT user_id) n FROM sessions WHERE created_at >= ?', wk],
     pro_comp: ['SELECT COUNT(*) n FROM (SELECT LOWER(email) e FROM app_users WHERE pro_comp=1 UNION SELECT LOWER(email) FROM users WHERE pro_comp=1)'],
     companies: ['SELECT COUNT(*) n FROM companies'], free: ['SELECT COUNT(*) n FROM companies WHERE free_license=1'],
-    drivers: ['SELECT COUNT(*) n FROM drivers WHERE account_deleted_at IS NULL'], routes: ['SELECT COUNT(*) n FROM routes'],
+    drivers: ['SELECT COUNT(*) n FROM drivers WHERE account_deleted_at IS NULL'],
     signups: [`SELECT d, COUNT(*) n FROM (SELECT strftime('%Y-%m-%d', created_at/1000, 'unixepoch') d FROM app_users WHERE created_at >= ?
     UNION ALL SELECT strftime('%Y-%m-%d', created_at/1000, 'unixepoch') FROM users WHERE created_at >= ?) GROUP BY d`, since, since],
     gApp: ['SELECT COUNT(*) n FROM app_users WHERE google_sub IS NOT NULL'], gWeb: ['SELECT COUNT(*) n FROM users WHERE google_sub IS NOT NULL'],
@@ -75,8 +75,7 @@ export async function overview(db, now = Date.now()) {
   const n = (k) => (R[k][0] && R[k][0].n) || 0;
   const app = n('app'), web = n('web');
   const out = { app_users: app, website_users: web, personal: n('personal'), active_7d: n('activeApp') + n('activeWeb'), pro_comp: n('pro_comp'),
-    companies: n('companies'), free_license_companies: n('free'), drivers: n('drivers'), dispatch_routes: n('routes'),
-    not_connected: { installs: 'Not connected yet', rating: 'Not connected yet', crash_free: 'Not connected yet' } };
+    companies: n('companies'), free_license_companies: n('free'), drivers: n('drivers') };
   // sign-ups per day, last 30 days (UTC), app + website
   const m = Object.fromEntries(R.signups.map((r) => [r.d, r.n])); out.signups = [];
   for (let i = 29; i >= 0; i--) { const d = new Date(now - i * 86400e3).toISOString().slice(0, 10); out.signups.push({ day: d, n: m[d] || 0 }); }
@@ -107,7 +106,7 @@ export async function userDetail(db, kind, id, now = Date.now()) {
   const t = await target(db, kind, id); if (!t) return null;
   const day = (x) => new Date(x).toISOString().slice(0, 10), wk = day(now - 6 * 86400e3);
   const use = (k, uid) => uid ? db.prepare('SELECT api, SUM(count) c FROM user_usage WHERE kind=? AND user_id=? AND day>=? GROUP BY api').bind(k, uid, wk).all() : null;
-  // 10-29: independent reads in parallel (were ~12 sequential round trips)
+  // 10-29: independent reads in parallel
   const [app, web, co, member, drv, ua, uw, au] = await Promise.all([
     t.appId ? db.prepare('SELECT id, name, created_at, last_sign_in_at, last_seen_at, sign_in_count, COALESCE(pro_comp,0) pc, google_sub IS NOT NULL g, app_version av, app_version_code avc FROM app_users WHERE id=?').bind(t.appId).first() : null,
     t.webId ? db.prepare('SELECT id, name, created_at, sign_in_count, email_verified_at, COALESCE(pro_comp,0) pc, google_sub IS NOT NULL g, pw_hash IS NOT NULL p FROM users WHERE id=?').bind(t.webId).first() : null,
@@ -135,7 +134,7 @@ export async function userDetail(db, kind, id, now = Date.now()) {
     sign_ins: ((app && app.sign_in_count) || 0) + ((web && web.sign_in_count) || 0),
     last_app_open: app ? app.last_seen_at || null : null, app_version: app ? versionLabel(app.av, app.avc) : null,
     company: co ? co.name : member ? member.name : drv ? drv.name : null, role: co ? 'owner' : member ? member.role : drv ? 'driver' : null,
-    pro_comp: !!((app && app.pc) || (web && web.pc)), pro_play: null,
+    pro_comp: !!((app && app.pc) || (web && web.pc)),
     dispatch_license: co ? !!co.free_license : null, license_toggle: !!co,
     routes, stops_done, usage_7d: usage,
     audit: au.results || [] };

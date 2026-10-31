@@ -168,18 +168,14 @@ export async function proSubs(db, now = Date.now()) {
     const live = last.v ? ACTIVE_STATES.has(last.state) && last.tr !== 1 : PAID_TYPES.has(last.t) || (last.t === 4 && last.tr === 0);
     if (live && !(last.exp && last.exp < now)) paid++;
   }
-  return { has_data: true, ...base, window_days: 30, trial_starts: trials, new_subscriptions: purchases, conversions: conv, cancels,
+  return { has_data: true, ...base, trial_starts: trials, new_subscriptions: purchases, conversions: conv, cancels,
     active_paid: paid, mrr_usd: Math.round(paid * PRO_MONTHLY * 100) / 100, price: PRO_MONTHLY,
     unverified_events: ev.filter((e) => !e.v).length, total_events: ev.length,
     note: 'Conversions = first renewal (first paid charge after the trial). Unverified = raw Play notification, no Play API lookup.' };
 }
 
-export const COMING_SOON = {
-  crash_free: 'Coming soon (Play reporting)', anr: 'Coming soon (Play reporting)', rating: 'Coming soon (Play reporting)',
-  installs: 'Coming soon (Play reporting)', version_spread: 'Coming soon (Play reporting)' };
-
-export async function all_(db, now = Date.now()) {          // 10-29: sections run in parallel (were 10 sequential awaits)
+export async function all_(db, now = Date.now()) {          // 10-29: sections run in parallel
   const [engagement_, cohorts_, activation_, signups_weekly, gone_quiet, api_cost, dispatch, routes, features_, pro] = await Promise.all([engagement(db, now), cohorts(db, now), activation(db, now),
     signupsWeekly(db, now), goneQuiet(db, now), apiCost(db, now), dispatchBiz(db, now), routesOps(db), features(db, now), proSubs(db, now)]);
-  return { engagement: engagement_, cohorts: cohorts_, activation: activation_, signups_weekly, gone_quiet, api_cost, dispatch, routes, features: features_, pro, coming_soon: COMING_SOON };
+  return { engagement: engagement_, cohorts: cohorts_, activation: activation_, signups_weekly, gone_quiet, api_cost, dispatch, routes, features: features_, pro };
 }
