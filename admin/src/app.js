@@ -45,7 +45,7 @@ async function session(db, req, now, unlockedFor) {
   const s = await db.prepare('UPDATE caf_app_sessions SET last_at=? WHERE token_hash=? AND revoked_at IS NULL AND created_at>? AND last_at>? RETURNING email, created_at')
     .bind(now, await sha256(m[1]), now - SESSION_MAX, now - SESSION_IDLE).first();
   if (!s) return null;
-  const [role, unl] = await Promise.all([roleOf(db, s.email), unlockedFor ? unlockedFor(s.email) : false]);          // removed admins lose the app at once; 10-29: unlock check in parallel
+  const [role, unl] = await Promise.all([roleOf(db, s.email), unlockedFor ? unlockedFor(s.email) : false]);          // removed admins lose the app at once
   return role ? { email: s.email, iat: Math.floor(s.created_at / 1000), role, hash: await sha256(m[1]), unl } : null;
 }
 const codeMail = (code) => ({ from: { email: 'no-reply@cajunappfactory.com', name: 'Cajun App Factory' }, subject: 'Your Cajun App Factory Admin sign-in code',
