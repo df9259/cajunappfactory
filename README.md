@@ -2,11 +2,9 @@
 
 Source for the pages on cajunappfactory.com.
 
-- `/` company page
-- `/privacy/` company privacy policy
-- `/stopscope/` StopScope app page
-- `/stopscope/privacy/` StopScope privacy policy for the Play listing
-- `/mystops/` and `/mystops/privacy/` redirect to the StopScope pages
+- `/` company page (`index.html`)
+- `/privacy/` company privacy policy (`privacy/index.html`)
+- `/stopscope/*` and `/mystops/*` 301 via `_redirects`
 
 The web bot is `GROK-BOT.md`. Paste that file and say `run site`.
 
