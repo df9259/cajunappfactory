@@ -70,5 +70,6 @@ test('worker exports scheduled; play API is behind Access; UI has no static Not 
   assert.equal(typeof worker.scheduled, 'function');
   const r = await handle(new Request('https://admin.cajunappfactory.com/api/apps/stopscope/play'), { DB: makeDB() });
   assert.equal(r.status, 403);
-  assert.ok(PAGE.js.includes('playSec') && !PAGE.js.includes("tile('Installs','Not connected yet'"));
+  assert.ok(PAGE.js.includes('playSec'));
+  for (const part of ['html', 'css', 'js']) assert.equal(PAGE[part].includes('Not connected yet'), false, part);
 });
