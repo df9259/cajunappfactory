@@ -10,9 +10,9 @@ You keep cajunappfactory.com accurate and public. You edit this repo, commit to 
 
 - Company: Cajun App Factory
 - Domain: `cajunappfactory.com`
-- App page: `https://cajunappfactory.com/stopscope`
+- App page: `https://stopscope.com`
 - Company privacy: `https://cajunappfactory.com/privacy`
-- App privacy, the one Play uses: `https://cajunappfactory.com/stopscope/privacy`
+- App privacy, the one Play uses: `https://stopscope.com/privacy/`
 - Support: `support@cajunappfactory.com`
 - Public app name: StopScope
 - Play title: `StopScope: Route Planner`
@@ -41,7 +41,7 @@ Subhead: StopScope turns a label, a photo, a typed list, or a spreadsheet into t
 
 ## Privacy page
 
-The app policy must stay public and name StopScope, StopScope Dispatch and Cajun App Factory. Since 0.3.0 (effective October 14, 2026) it covers required sign-in, the account and its deletion (https://stopscope.com/delete-account), Dispatch data shared with the company and its retention, AdMob, Stripe, Cloudflare, security, US state and GDPR rights, and children. The source text is kept in sync with https://stopscope.com/privacy (repo df9259/stopscope-web, public/privacy/index.html). Do not remove those sections without Dominic's OK.
+`privacy/index.html` is the website-only policy. It links to the app policy at https://stopscope.com/privacy/ (repo df9259/stopscope-web, public/privacy/index.html). The app policy is not kept in this repo. It must stay public and name StopScope, StopScope Dispatch and Cajun App Factory. Since 0.3.0 (effective October 14, 2026) it covers required sign-in, the account and its deletion (https://stopscope.com/delete-account), Dispatch data shared with the company and its retention, AdMob, Stripe, Cloudflare, security, US state and GDPR rights, and children.
 
 ## Cycle
 

@@ -37,7 +37,7 @@ async function route(){const p=location.pathname;put(M,$('p',{cls:'muted'},'Load
 async function home(){crumb('Apps');const o=await api('/api/apps/stopscope/overview');
  put(M,$('h1',{},'Your apps'),$('div',{cls:'sub'},'Tap an app for stats and users'),
   $('div',{cls:'card appcard',on:{click:()=>go('/apps/stopscope')}},$('div',{style:'display:flex;gap:12px;align-items:center'},$('div',{cls:'ico'},'S'),$('div',{},$('div',{style:'font-size:17px;font-weight:700'},'StopScope'),$('div',{cls:'muted'},'Android · stopscope.com'))),
-   $('div',{cls:'grid',style:'grid-template-columns:1fr 1fr 1fr;margin-top:14px'},[['Users',n(o.app_users+o.website_users)],['Active 7d',n(o.active_7d)],['Rating','Not connected yet']].map(([a,b])=>$('div',{},$('div',{cls:'muted'},a),$('b',{style:'font-size:'+(b.length>8?'12':'20')+'px'},b))))))}
+   $('div',{cls:'grid',style:'grid-template-columns:1fr 1fr;margin-top:14px'},[['Users',n(o.app_users+o.website_users)],['Active 7d',n(o.active_7d)]].map(([a,b])=>$('div',{},$('div',{cls:'muted'},a),$('b',{style:'font-size:'+(b.length>8?'12':'20')+'px'},b))))))}
 async function overview(){crumb('Apps › StopScope');const[o,s,pl]=await Promise.all([api('/api/apps/stopscope/overview'),api('/api/apps/stopscope/stats'),api('/api/apps/stopscope/play').catch(()=>({}))]);
  const e=s.engagement,a=s.activation,r=s.routes,d=s.dispatch,c=s.api_cost;const mx=Math.max(1,...o.signups.map(x=>x.n));
  put(M,$('div',{style:'display:flex;align-items:center;gap:12px'},$('h1',{},'StopScope'),$('div',{cls:'sp'}),$('button',{cls:'btn',on:{click:()=>go('/apps/stopscope/users')}},'Users')),
