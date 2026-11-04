@@ -10,6 +10,7 @@ import { handleApp } from './app.js';
 import { sendMail, resetMail, randomToken, sha256, rateOk } from './mail.js';
 
 const SEC = { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'Referrer-Policy': 'no-referrer',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
   'Content-Security-Policy': "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'" };
 const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { ...SEC, 'Content-Type': 'application/json; charset=utf-8' } });
 const forbidden = () => new Response('Forbidden', { status: 403, headers: { ...SEC, 'Content-Type': 'text/plain' } });
