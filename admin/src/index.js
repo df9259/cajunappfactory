@@ -1,4 +1,4 @@
-// Cajun App Factory admin (admin.cajunappfactory.com). Every request passes the Cloudflare Access gate first; anything else is 403.
+// Cajun App Factory admin (admin.cajunappfactory.com). Every request passes the Cloudflare Access gate first except /api/app/* (the Worker checks that path itself); anything else is 403.
 import { verifyAccess, ALLOWED_EMAIL } from './access.js';
 import * as SS from './stopscope.js';
 import { PAGE } from './ui.js';
